@@ -41,10 +41,10 @@ dependencies:
   contacts_service: ^0.6.3
   permission_handler: ^10.4.1
   persistent_bottom_nav_bar: ^4.0.2
-  sms_advanced: ^1.0.1
+  # sms_advanced: ^1.0.1
   flutter_sms_inbox: ^1.0.3
   android_intent_plus: ^4.0.1
-  telephony: ^0.2.0
+  # telephony: ^0.2.0
 
 dev_dependencies:
   flutter_test:
