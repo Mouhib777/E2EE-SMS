@@ -98,9 +98,12 @@ class _MessagesListView extends StatelessWidget {
         var message = messages[i];
 
         return InkWell(
-          onDoubleTap: () {
+          onTap: () {
             pushNewScreenWithRouteSettings(context,
-                screen: decryptionPage(),
+                screen: decryptionPage(
+                  body: '${message.body}',
+                  title: '${message.sender}',
+                ),
                 settings: RouteSettings(),
                 withNavBar: false,
                 pageTransitionAnimation: PageTransitionAnimation.cupertino);

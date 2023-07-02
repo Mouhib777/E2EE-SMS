@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class decryptionPage extends StatefulWidget {
-  const decryptionPage({super.key});
+  final String title;
+  final String body;
+  const decryptionPage({required this.title, required this.body, super.key});
 
   @override
   State<decryptionPage> createState() => _decryptionPageState();
@@ -10,6 +12,25 @@ class decryptionPage extends StatefulWidget {
 class _decryptionPageState extends State<decryptionPage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(widget.body),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
