@@ -17,7 +17,7 @@ class _splashScreenState extends State<splashScreen> {
   void initState() {
     Timer(
         Duration(
-          seconds: 3,
+          seconds: 1,
         ), () async {
       // const platform = const MethodChannel("com.example.chat/chat");
       // try {
