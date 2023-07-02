@@ -82,10 +82,15 @@ class _MessagesListView extends StatelessWidget {
       itemBuilder: (BuildContext context, int i) {
         var message = messages[i];
 
-        return ListTile(
-          title: Text(
-              '${message.sender} ${message.date!.hour}h:${message.date!.minute}'),
-          subtitle: Text('${message.body}'),
+        return InkWell(
+          onDoubleTap: () {
+            print(message.body);
+          },
+          child: ListTile(
+            title: Text(
+                '${message.sender} ${message.date!.hour}h:${message.date!.minute}'),
+            subtitle: Text('${message.body}'),
+          ),
         );
       },
     );

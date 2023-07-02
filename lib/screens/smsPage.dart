@@ -46,12 +46,19 @@ class _smsPageState extends State<smsPage> {
 
   @override
   Widget build(BuildContext context) {
-    void _sendSMS(String message, String recipents) async {
-      String _result = await sendSMS(message: message, recipients: [recipents])
-          .catchError((onError) {
-        print(onError);
-      });
-      print(_result);
+    void _sendSMS(String message, String recipient) async {
+      try {
+        String _result = await sendSMS(
+          message: message,
+          recipients: [recipient],
+          sendDirect: true,
+        );
+        print(_result);
+      } catch (error) {
+        print('Failed to send SMS: $error');
+        EasyLoading.showError('$error');
+        // Handle the error accordingly
+      }
     }
 
     return Scaffold(
