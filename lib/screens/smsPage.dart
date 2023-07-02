@@ -31,19 +31,6 @@ class _smsPageState extends State<smsPage> {
     return decrypted;
   }
 
-  // List<String> recipients1 = [
-  //   '1234567890',
-  //   '0987654321'
-  // ]; // Sample recipient phone numbers
-
-  // void _sendSMS(String message, List<String> recipents) async {
-  //   String _result = await sendSMS(message: message, recipients: recipents)
-  //       .catchError((onError) {
-  //     print(onError);
-  //   });
-  //   print(_result);
-  // }
-
   @override
   Widget build(BuildContext context) {
     void _sendSMS(String message, String recipient) async {
@@ -54,6 +41,7 @@ class _smsPageState extends State<smsPage> {
           sendDirect: true,
         );
         print(_result);
+        EasyLoading.showSuccess("SMS sent with encryption");
       } catch (error) {
         print('Failed to send SMS: $error');
         EasyLoading.showError('$error');
