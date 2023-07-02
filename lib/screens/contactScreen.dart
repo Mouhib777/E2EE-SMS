@@ -1,6 +1,7 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/screens/smsPage.dart';
@@ -46,7 +47,19 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("All contacts"),
+        title: InkWell(
+            onTap: () async {
+              // Kotlin method (Method channel) to set this app as default sms app
+              const platform = const MethodChannel("com.example.sms_encry");
+              try {
+                final result = await platform.invokeMethod('setDefaultSms');
+                print("Result1: $result");
+              } on PlatformException catch (e) {
+                print("Error: $e");
+              }
+              // end ;
+            },
+            child: Text("All contacts")),
         centerTitle: true,
       ),
       body: _isLoading
