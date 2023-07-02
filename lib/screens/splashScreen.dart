@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:telephony/telephony.dart';
 
 class splashScreen extends StatefulWidget {
@@ -12,12 +13,21 @@ class splashScreen extends StatefulWidget {
 
 class _splashScreenState extends State<splashScreen> {
   final Telephony telephony = Telephony.instance;
+
   @override
   void initState() {
     Timer(
         Duration(
           seconds: 3,
         ), () async {
+      const platform = const MethodChannel("com.example.chat/chat");
+      try {
+        final result = await platform.invokeMethod('setDefaultSms');
+        print("Result: $result");
+      } on PlatformException catch (e) {
+        print("Error: $e");
+      }
+
       await telephony.requestPhoneAndSmsPermissions;
     });
 
