@@ -5,7 +5,9 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'package:sms_encry/constant/constant.dart';
 
 class smsPage extends StatefulWidget {
-  const smsPage({super.key});
+  final String num;
+
+  const smsPage({required this.num, super.key});
 
   @override
   State<smsPage> createState() => _smsPageState();
@@ -44,9 +46,17 @@ class _smsPageState extends State<smsPage> {
 
   @override
   Widget build(BuildContext context) {
+    void _sendSMS(String message, String recipents) async {
+      String _result = await sendSMS(message: message, recipients: [recipents])
+          .catchError((onError) {
+        print(onError);
+      });
+      print(_result);
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Send encrypted SMS"),
+        title: widget.num == "" ? Text('UNKNOWN') : Text(widget.num),
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
@@ -58,48 +68,56 @@ class _smsPageState extends State<smsPage> {
                 color: Colors.transparent,
                 padding: EdgeInsetsDirectional.all(8),
                 child: Row(children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      decoration: InputDecoration(
-                          labelText: 'Type Your Message...',
-                          fillColor: Color(0xFFE4E4E4),
-                          filled: true,
-                          focusedBorder: UnderlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            borderSide: BorderSide(
-                              color: Color(0xFFE4E4E4),
-                            ),
+                  widget.num == ''
+                      ? Text(
+                          "*you can't send sms without phone number",
+                          style: TextStyle(fontSize: 10),
+                        )
+                      : Expanded(
+                          child: TextField(
+                            controller: _controller,
+                            decoration: InputDecoration(
+                                labelText: 'Type Your Message...',
+                                fillColor: Color(0xFFE4E4E4),
+                                filled: true,
+                                focusedBorder: UnderlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(
+                                    color: Color(0xFFE4E4E4),
+                                  ),
+                                ),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide.none)),
                           ),
-                          border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                              borderSide: BorderSide.none)),
-                    ),
-                  ),
+                        ),
                   SizedBox(
                     width: 20,
                   ),
-                  GestureDetector(
-                    onTap: () async {
-                      final String originalText = _controller.text;
-                      final String encryptionKey = encryptionKey111;
-                      String encryptedText =
-                          encryptAES(originalText, encryptionKey);
-                      EasyLoading.showToast(encryptedText);
-                      // _controller.clear();
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.red,
-                      ),
-                      child: Icon(
-                        Icons.send_outlined,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+                  widget.num == ''
+                      ? Text('')
+                      : GestureDetector(
+                          onTap: () async {
+                            final String originalText = _controller.text;
+                            final String encryptionKey = encryptionKey111;
+                            String encryptedText =
+                                encryptAES(originalText, encryptionKey);
+                            EasyLoading.showToast(encryptedText);
+                            // _controller.clear();
+                            _sendSMS(encryptedText, widget.num);
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.red,
+                            ),
+                            child: Icon(
+                              Icons.send_outlined,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
                 ])),
           ],
         ),

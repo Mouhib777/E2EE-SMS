@@ -1,6 +1,8 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:sms_encry/screens/smsPage.dart';
 
 class contactSCreen extends StatefulWidget {
   const contactSCreen({super.key});
@@ -56,9 +58,20 @@ class _contactSCreenState extends State<contactSCreen> {
                   : '',
               style: TextStyle(fontSize: 14.0),
             ),
-            trailing: Icon(Icons.phone),
+            trailing: Image.asset(
+              "assets/images/messaging.png",
+              width: 30,
+            ),
             onTap: () {
-              // Handle contact tap
+              pushNewScreenWithRouteSettings(context,
+                  screen: smsPage(
+                    num: contact.phones!.isNotEmpty
+                        ? contact.phones!.first.value ?? ''
+                        : '',
+                  ),
+                  settings: RouteSettings(),
+                  withNavBar: false,
+                  pageTransitionAnimation: PageTransitionAnimation.cupertino);
             },
           );
         },
