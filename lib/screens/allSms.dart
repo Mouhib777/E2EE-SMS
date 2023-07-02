@@ -24,6 +24,7 @@ class _allSmsState extends State<allSms> {
     return Scaffold(
       appBar: AppBar(
         title: Text('SMS Messages'),
+        centerTitle: true,
       ),
       body: Container(
         padding: const EdgeInsets.all(10.0),
@@ -32,34 +33,34 @@ class _allSmsState extends State<allSms> {
                 messages: _messages,
               )
             : Center(
-                child: Text(
-                  'No messages to show.',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                  textAlign: TextAlign.center,
+                child: InkWell(
+                  child: Text(
+                    'No messages to show.',
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
+                    // style: Theme.of(context).textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  onLongPress: () async {
+                    var permission = await Permission.sms.status;
+                    if (permission.isGranted) {
+                      final messages = await _query.querySms(
+                        kinds: [
+                          SmsQueryKind.inbox,
+                          SmsQueryKind.sent,
+                        ],
+                        // address: '+254712345789',
+                        count: 10,
+                      );
+                      debugPrint('sms inbox messages: ${messages.length}');
+
+                      setState(() => _messages = messages);
+                    } else {
+                      await Permission.sms.request();
+                    }
+                  },
                 ),
               ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () async {
-      //     var permission = await Permission.sms.status;
-      //     if (permission.isGranted) {
-      //       final messages = await _query.querySms(
-      //         kinds: [
-      //           SmsQueryKind.inbox,
-      //           SmsQueryKind.sent,
-      //         ],
-      //         // address: '+254712345789',
-      //         count: 10,
-      //       );
-      //       debugPrint('sms inbox messages: ${messages.length}');
-
-      //       setState(() => _messages = messages);
-      //     } else {
-      //       await Permission.sms.request();
-      //     }
-      //   },
-      //   child: const Icon(Icons.refresh),
-      // ),
     );
   }
 }
@@ -74,14 +75,16 @@ class _MessagesListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return ListView.separated(
+      separatorBuilder: (BuildContext context, int index) => Divider(),
       shrinkWrap: true,
       itemCount: messages.length,
       itemBuilder: (BuildContext context, int i) {
         var message = messages[i];
 
         return ListTile(
-          title: Text('${message.sender} [${message.date}]'),
+          title: Text(
+              '${message.sender} ${message.date!.hour}h:${message.date!.minute}'),
           subtitle: Text('${message.body}'),
         );
       },
