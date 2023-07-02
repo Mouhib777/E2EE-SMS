@@ -37,7 +37,7 @@ class _allSmsState extends State<allSms> {
             : Center(
                 child: InkWell(
                   child: Text(
-                    'No messages to show.',
+                    'No messages to show',
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
                     // style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
