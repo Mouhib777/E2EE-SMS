@@ -28,14 +28,17 @@ class _navBarState extends State<navBar> {
     List<PersistentBottomNavBarItem> _navBarsItems() {
       return [
         PersistentBottomNavBarItem(
-          iconSize: 32,
-          icon: Image.asset("assets/images/contact.png"),
+          // iconSize: 25,
+          icon: Image.asset(
+            "assets/images/contact.png",
+            height: 25,
+          ),
           title: ("Contacts"),
           activeColorPrimary: primaryColor,
           inactiveColorPrimary: Colors.black,
         ),
         PersistentBottomNavBarItem(
-          icon: Icon(Icons.message),
+          icon: Icon(CupertinoIcons.chat_bubble_2_fill),
           title: ("Messages"),
           activeColorPrimary: primaryColor,
           inactiveColorPrimary: Colors.black,
