@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:sms_encry/smsPage.dart';
+import 'package:sms_encry/screens/smsPage.dart';
 
 void main() {
   runApp(const MyApp());
