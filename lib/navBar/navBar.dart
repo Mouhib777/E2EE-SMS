@@ -4,6 +4,9 @@ import 'package:flutter/src/widgets/framework.dart';
 
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/constant/constant.dart';
+import 'package:sms_encry/screens/allSms.dart';
+import 'package:sms_encry/screens/contactScreen.dart';
+import 'package:sms_encry/screens/smsPage.dart';
 //import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class navBar extends StatefulWidget {
@@ -18,14 +21,17 @@ class _navBarState extends State<navBar> {
 
     _controller = PersistentTabController(initialIndex: 0);
     List<Widget> _buildScreens() {
-      return [];
+      return [
+        contactSCreen(),
+        allSms(),
+      ];
     }
 
     List<PersistentBottomNavBarItem> _navBarsItems() {
       return [
         PersistentBottomNavBarItem(
           iconSize: 32,
-          icon: Icon(Icons.no_encryption),
+          icon: Image.asset("assets/images/contact.png"),
           // title: ("Home"),
           activeColorPrimary: primaryColor,
 
@@ -37,14 +43,14 @@ class _navBarState extends State<navBar> {
           activeColorPrimary: primaryColor,
           inactiveColorPrimary: Colors.black,
         ),
-        PersistentBottomNavBarItem(
-          iconSize: 35,
-          icon: Icon(Icons.no_encryption),
+        // PersistentBottomNavBarItem(
+        //   iconSize: 35,
+        //   icon: Icon(Icons.no_encryption),
 
-          //title: ("Favorites"),
-          activeColorPrimary: primaryColor,
-          inactiveColorPrimary: Colors.yellow,
-        ),
+        //   //title: ("Favorites"),
+        //   activeColorPrimary: primaryColor,
+        //   inactiveColorPrimary: Colors.yellow,
+        // ),
       ];
     }
 
@@ -85,7 +91,7 @@ class _navBarState extends State<navBar> {
         duration: Duration(milliseconds: 200),
       ),
       navBarStyle:
-          NavBarStyle.style15, // Choose the nav bar style with this property.
+          NavBarStyle.style1, // Choose the nav bar style with this property.
     ));
   }
 }
