@@ -33,33 +33,33 @@ class _allSmsState extends State<allSms> {
               )
             : Center(
                 child: Text(
-                  'No messages to show.\n Tap refresh button...',
+                  'No messages to show.',
                   style: Theme.of(context).textTheme.headlineSmall,
                   textAlign: TextAlign.center,
                 ),
               ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          var permission = await Permission.sms.status;
-          if (permission.isGranted) {
-            final messages = await _query.querySms(
-              kinds: [
-                SmsQueryKind.inbox,
-                SmsQueryKind.sent,
-              ],
-              // address: '+254712345789',
-              count: 10,
-            );
-            debugPrint('sms inbox messages: ${messages.length}');
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () async {
+      //     var permission = await Permission.sms.status;
+      //     if (permission.isGranted) {
+      //       final messages = await _query.querySms(
+      //         kinds: [
+      //           SmsQueryKind.inbox,
+      //           SmsQueryKind.sent,
+      //         ],
+      //         // address: '+254712345789',
+      //         count: 10,
+      //       );
+      //       debugPrint('sms inbox messages: ${messages.length}');
 
-            setState(() => _messages = messages);
-          } else {
-            await Permission.sms.request();
-          }
-        },
-        child: const Icon(Icons.refresh),
-      ),
+      //       setState(() => _messages = messages);
+      //     } else {
+      //       await Permission.sms.request();
+      //     }
+      //   },
+      //   child: const Icon(Icons.refresh),
+      // ),
     );
   }
 }
