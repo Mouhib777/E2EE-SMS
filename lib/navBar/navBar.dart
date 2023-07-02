@@ -6,8 +6,6 @@ import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/constant/constant.dart';
 import 'package:sms_encry/screens/allSms.dart';
 import 'package:sms_encry/screens/contactScreen.dart';
-import 'package:sms_encry/screens/smsPage.dart';
-//import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 class navBar extends StatefulWidget {
   @override
