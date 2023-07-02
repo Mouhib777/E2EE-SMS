@@ -36,7 +36,7 @@ class _navBarState extends State<navBar> {
           inactiveColorPrimary: Colors.black,
         ),
         PersistentBottomNavBarItem(
-          icon: Icon(Icons.no_encryption),
+          icon: Icon(Icons.message),
           // title: ("My Ordre"),
           activeColorPrimary: primaryColor,
           inactiveColorPrimary: Colors.black,
