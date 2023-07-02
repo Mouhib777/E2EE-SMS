@@ -26,8 +26,29 @@ class _decryptionPageState extends State<decryptionPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(widget.body),
-            )
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.body),
+                  )),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(widget.body),
+                  )),
+            ),
           ],
         ),
       ),
