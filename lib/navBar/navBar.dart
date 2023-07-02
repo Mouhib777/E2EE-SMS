@@ -30,25 +30,16 @@ class _navBarState extends State<navBar> {
         PersistentBottomNavBarItem(
           iconSize: 32,
           icon: Image.asset("assets/images/contact.png"),
-          // title: ("Home"),
+          title: ("Contacts"),
           activeColorPrimary: primaryColor,
-
           inactiveColorPrimary: Colors.black,
         ),
         PersistentBottomNavBarItem(
           icon: Icon(Icons.message),
-          // title: ("My Ordre"),
+          title: ("Messages"),
           activeColorPrimary: primaryColor,
           inactiveColorPrimary: Colors.black,
         ),
-        // PersistentBottomNavBarItem(
-        //   iconSize: 35,
-        //   icon: Icon(Icons.no_encryption),
-
-        //   //title: ("Favorites"),
-        //   activeColorPrimary: primaryColor,
-        //   inactiveColorPrimary: Colors.yellow,
-        // ),
       ];
     }
 
@@ -62,34 +53,31 @@ class _navBarState extends State<navBar> {
       confineInSafeArea: true,
       backgroundColor: Colors.white,
 
-      //, // Default is Colors.white.
-      handleAndroidBackButtonPress: true, // Default is true.
+      //, //? Default is Colors.white.
+      handleAndroidBackButtonPress: true, //? Default is true.
       resizeToAvoidBottomInset:
-          true, // This needs to be true if you want to move up the screen when keyboard appears. Default is true.
-      stateManagement: true, // Default is true.
+          true, //? This needs to be true if you want to move up the screen when keyboard appears. Default is true.
+      stateManagement: true, //? Default is true.
       hideNavigationBarWhenKeyboardShows:
-          true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
+          true, //? Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
       decoration: NavBarDecoration(
         borderRadius: BorderRadius.only(
             topRight: Radius.circular(25), topLeft: Radius.circular(25)),
-
-        //border: Border.all(color: Colors.black26)
       ),
       popAllScreensOnTapOfSelectedTab: true,
       popActionScreens: PopActionScreensType.all,
       itemAnimationProperties: ItemAnimationProperties(
-        // Navigation Bar's items animation properties.
+        //? Navigation Bar's items animation properties.
         duration: Duration(milliseconds: 200),
         curve: Curves.ease,
       ),
       screenTransitionAnimation: ScreenTransitionAnimation(
-        // Screen transition animation on change of selected tab.
+        //? Screen transition animation on change of selected tab.
         animateTabTransition: true,
         curve: Curves.ease,
         duration: Duration(milliseconds: 200),
       ),
-      navBarStyle:
-          NavBarStyle.style1, // Choose the nav bar style with this property.
+      navBarStyle: NavBarStyle.style1,
     ));
   }
 }
