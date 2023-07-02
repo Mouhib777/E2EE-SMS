@@ -29,6 +29,23 @@ class _allSmsState extends State<allSms> {
         title: Text("All SMS"),
         centerTitle: true,
       ),
+      body: ListView.builder(
+        itemCount: messages.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                minVerticalPadding: 8,
+                minLeadingWidth: 4,
+                title: Text(messages[index].body ?? 'empty'),
+                subtitle: Text(messages[index].address ?? 'empty'),
+              ),
+              const Divider()
+            ],
+          );
+        },
+      ),
     );
   }
 }
