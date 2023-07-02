@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sms_advanced/sms_advanced.dart';
 
 class allSms extends StatefulWidget {
   const allSms({super.key});
@@ -8,6 +9,9 @@ class allSms extends StatefulWidget {
 }
 
 class _allSmsState extends State<allSms> {
+  final SmsQuery query = SmsQuery();
+  List<SmsMessage> messages = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
