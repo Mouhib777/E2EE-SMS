@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:sms_encry/constant/constant.dart';
 
 class decryptionPage extends StatefulWidget {
   final String title;
@@ -10,6 +12,14 @@ class decryptionPage extends StatefulWidget {
 }
 
 class _decryptionPageState extends State<decryptionPage> {
+  String decryptAES(String cipherText, String key) {
+    final keyBytes = encrypt.Key.fromUtf8(key);
+    final iv = encrypt.IV.fromLength(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
+    final decrypted = encrypter.decrypt64(cipherText, iv: iv);
+    return decrypted;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +56,7 @@ class _decryptionPageState extends State<decryptionPage> {
                       borderRadius: BorderRadius.circular(15)),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(widget.body),
+                    child: Text(decryptAES(widget.body, encryptionKey111)),
                   )),
             ),
           ],

@@ -22,8 +22,8 @@ class _navBarState extends State<navBar> {
     _controller = PersistentTabController(initialIndex: 0);
     List<Widget> _buildScreens() {
       return [
-        contactSCreen(),
-        AllSms(),
+        ContactScreen(),
+        allSms(),
       ];
     }
 
