@@ -1,22 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-// import 'package:sms_advanced/sms_advanced.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
+import 'dart:async';
 
-class allSms extends StatefulWidget {
-  const allSms({super.key});
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+import 'package:sms_encry/screens/decryptionPage.dart';
+
+class AllSms extends StatefulWidget {
+  const AllSms({Key? key});
 
   @override
-  State<allSms> createState() => _allSmsState();
+  State<AllSms> createState() => _AllSmsState();
 }
 
-class _allSmsState extends State<allSms> {
+class _AllSmsState extends State<AllSms> {
   final SmsQuery _query = SmsQuery();
-  List<SmsMessage> _messages = [];
+  StreamController<List<SmsMessage>> _smsStreamController =
+      StreamController<List<SmsMessage>>();
+  Stream<List<SmsMessage>>? _smsStream;
 
   @override
   void initState() {
     super.initState();
+    _smsStream = _smsStreamController.stream;
+    _loadSmsMessages();
+  }
+
+  @override
+  void dispose() {
+    _smsStreamController.close();
+    super.dispose();
+  }
+
+  Future<void> _loadSmsMessages() async {
+    var permission = await Permission.sms.status;
+    if (permission.isGranted) {
+      final messages = await _query.querySms(
+        kinds: [
+          SmsQueryKind.inbox,
+          SmsQueryKind.sent,
+        ],
+      );
+      _smsStreamController.add(messages);
+    } else {
+      await Permission.sms.request();
+    }
   }
 
   @override
@@ -28,38 +56,25 @@ class _allSmsState extends State<allSms> {
       ),
       body: Container(
         padding: const EdgeInsets.all(10.0),
-        child: _messages.isNotEmpty
-            ? _MessagesListView(
-                messages: _messages,
-              )
-            : Center(
+        child: StreamBuilder<List<SmsMessage>>(
+          stream: _smsStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+              return _MessagesListView(messages: snapshot.data!);
+            } else {
+              return Center(
                 child: InkWell(
                   child: Text(
                     'No messages to show.',
                     style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-                    // style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
-                  onLongPress: () async {
-                    var permission = await Permission.sms.status;
-                    if (permission.isGranted) {
-                      final messages = await _query.querySms(
-                        kinds: [
-                          SmsQueryKind.inbox,
-                          SmsQueryKind.sent,
-                        ],
-                        // address: '+254712345789',
-                        count: 10,
-                      );
-                      debugPrint('sms inbox messages: ${messages.length}');
-
-                      setState(() => _messages = messages);
-                    } else {
-                      await Permission.sms.request();
-                    }
-                  },
+                  onLongPress: _loadSmsMessages,
                 ),
-              ),
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -84,11 +99,16 @@ class _MessagesListView extends StatelessWidget {
 
         return InkWell(
           onDoubleTap: () {
-            print(message.body);
+            pushNewScreenWithRouteSettings(context,
+                screen: decryptionPage(),
+                settings: RouteSettings(),
+                withNavBar: false,
+                pageTransitionAnimation: PageTransitionAnimation.cupertino);
           },
           child: ListTile(
             title: Text(
-                '${message.sender} ${message.date!.hour}h:${message.date!.minute}'),
+              '${message.sender} ${message.date!.hour}h:${message.date!.minute}',
+            ),
             subtitle: Text('${message.body}'),
           ),
         );

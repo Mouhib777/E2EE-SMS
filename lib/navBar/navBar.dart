@@ -23,7 +23,7 @@ class _navBarState extends State<navBar> {
     List<Widget> _buildScreens() {
       return [
         contactSCreen(),
-        allSms(),
+        AllSms(),
       ];
     }
 
