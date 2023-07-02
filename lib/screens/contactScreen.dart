@@ -1,4 +1,5 @@
 import 'package:contacts_service/contacts_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -74,10 +75,11 @@ class _ContactScreenState extends State<ContactScreen> {
                         : '',
                     style: TextStyle(fontSize: 14.0),
                   ),
-                  trailing: Image.asset(
-                    "assets/images/messaging.png",
-                    width: 30,
-                  ),
+                  trailing: Icon(CupertinoIcons.chat_bubble),
+                  // Image.asset(
+                  //   "assets/images/messaging.png",
+                  //   width: 30,
+                  // ),
                   onTap: () {
                     pushNewScreenWithRouteSettings(
                       context,
