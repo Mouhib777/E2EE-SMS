@@ -11,6 +11,16 @@ class allSms extends StatefulWidget {
 class _allSmsState extends State<allSms> {
   final SmsQuery query = SmsQuery();
   List<SmsMessage> messages = [];
+  @override
+  void initState() {
+    super.initState();
+    fetchSMSMessages();
+  }
+
+  void fetchSMSMessages() async {
+    messages = await query.getAllSms;
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
