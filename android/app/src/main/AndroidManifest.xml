@@ -41,7 +41,7 @@
             android:value="2" />
 
         <receiver
-            android:name=".SmsReceiver"
+            android:name="com.example.sms_encry.SmsReceiver"
             android:permission="android.permission.BROADCAST_SMS"
             android:exported="true">
             
