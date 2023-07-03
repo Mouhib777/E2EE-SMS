@@ -37,6 +37,9 @@ class _splashScreenState extends State<splashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      body: Center(
+        child: Text("E2E Encryption"),
+      ),
     );
   }
 }
