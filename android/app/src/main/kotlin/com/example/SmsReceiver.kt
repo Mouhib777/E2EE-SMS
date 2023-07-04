@@ -42,8 +42,8 @@ class SmsReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun saveSmsToDatabase(context: Context?, sender: String, messageBody: String) {
-        if (context == null) return
+    private fun saveSmsToDatabase(context: Context?, sender: String, messageBody: String): Boolean {
+        if (context == null) return false
 
         if (!::databaseHelper.isInitialized) {
             databaseHelper = DatabaseHelper(context)
@@ -54,8 +54,10 @@ class SmsReceiver : BroadcastReceiver() {
             put("sender", sender)
             put("message_body", messageBody)
         }
-        db.insert("sms_table", null, contentValues)
+        val result = db.insert("sms_table", null, contentValues) != -1L
         db.close()
+
+        return result
     }
 
     private fun createNotification(context: Context, sender: String) {
