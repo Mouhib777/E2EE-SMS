@@ -10,6 +10,8 @@ import android.os.Build
 import android.app.NotificationManager
 import android.app.NotificationChannel
 import androidx.core.app.NotificationCompat
+import android.R
+
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -42,21 +44,22 @@ class SmsReceiver : BroadcastReceiver() {
                 "SMS Notifications",
                 NotificationManager.IMPORTANCE_DEFAULT
             )
-            val notificationManager = context?.getSystemService(NotificationManager::class.java)
+            val notificationManager = context.getSystemService(NotificationManager::class.java)
             notificationManager?.createNotificationChannel(channel)
         }
-
+    
         // Create the notification
         val notificationBuilder = NotificationCompat.Builder(context, "sms_notification_channel")
-            // .setSmallIcon(R.drawable.notification_icon)
+        .setSmallIcon(android.R.drawable.ic_dialog_info)
+        // Set a valid small icon resource
             .setContentTitle("New SMS")
             .setContentText("Received SMS from $sender: $messageBody")
-            // .setColor(ContextCompat.getColor(context, R.color.notification_color))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
-
+    
         // Display the notification
         val notificationManager = context.getSystemService(NotificationManager::class.java)
         notificationManager?.notify(123, notificationBuilder.build())
     }
+    
 }
