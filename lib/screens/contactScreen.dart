@@ -58,6 +58,9 @@ class _ContactScreenState extends State<ContactScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
         title: InkWell(
           onTap: () async {
             // Kotlin method (Method channel) to set this app as default sms app

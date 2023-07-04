@@ -51,9 +51,11 @@ class _smsPageState extends State<smsPage> {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
         title: widget.num == "" ? Text('UNKNOWN') : Text(widget.num),
         centerTitle: true,
-        backgroundColor: Colors.blue,
       ),
       body: Center(
         child: Column(
@@ -106,7 +108,7 @@ class _smsPageState extends State<smsPage> {
                             padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: Colors.red,
+                              color: Colors.black87,
                             ),
                             child: Icon(
                               Icons.send_outlined,
