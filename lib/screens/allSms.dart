@@ -30,7 +30,20 @@ class _AllSmsState extends State<AllSms> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 1,
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
         title: Text("All SMS"),
+        centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  smsListFuture = fetchSavedSMS(); // Refresh the SMS messages
+                });
+              },
+              icon: Icon(Icons.refresh))
+        ],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: smsListFuture, // Use the Future for fetching SMS messages
@@ -65,27 +78,19 @@ class _AllSmsState extends State<AllSms> {
                             PageTransitionAnimation.cupertino);
                   },
                   child: ListTile(
-                    title: Text(sender),
-                    subtitle: Text(messageBody),
-                    trailing: Icon(CupertinoIcons.chat_bubble),
-                  ),
+                      title: Text(sender),
+                      subtitle: Text(messageBody),
+                      trailing: IconButton(
+                          onPressed: () {},
+                          icon: Icon(
+                            CupertinoIcons.delete,
+                            color: Colors.red,
+                          ))),
                 );
               },
             );
           }
         },
-      ),
-      floatingActionButton: Positioned(
-        bottom: 56.0,
-        right: 16.0,
-        child: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              smsListFuture = fetchSavedSMS(); // Refresh the SMS messages
-            });
-          },
-          child: Icon(Icons.refresh),
-        ),
       ),
     );
   }
