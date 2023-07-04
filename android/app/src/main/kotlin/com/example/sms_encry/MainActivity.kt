@@ -20,8 +20,8 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterFragmentActivity() {
-    private val CHANNEL = "com.example.sms_encry"
-    private val SMS_RECEIVED_ACTION = "android.provider.Telephony.SMS_RECEIVED"
+    public val CHANNEL = "com.example.sms_encry"
+    public val SMS_RECEIVED_ACTION = "android.provider.Telephony.SMS_RECEIVED"
 
     public val SmsReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
