@@ -6,6 +6,10 @@ import android.content.Intent
 import android.provider.Telephony
 import android.telephony.SmsMessage
 import android.widget.Toast
+import android.os.Build
+import android.app.NotificationManager
+import android.app.NotificationChannel
+import androidx.core.app.NotificationCompat
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -31,6 +35,28 @@ class SmsReceiver : BroadcastReceiver() {
     }
 
     private fun createNotification(context: Context, sender: String, messageBody: String) {
-        // TODO: Implement your notification creation logic here
+        // Create a notification channel for Android Oreo and above
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                "sms_notification_channel",
+                "SMS Notifications",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val notificationManager = context?.getSystemService(NotificationManager::class.java)
+            notificationManager?.createNotificationChannel(channel)
+        }
+
+        // Create the notification
+        val notificationBuilder = NotificationCompat.Builder(context, "sms_notification_channel")
+            // .setSmallIcon(R.drawable.notification_icon)
+            .setContentTitle("New SMS")
+            .setContentText("Received SMS from $sender: $messageBody")
+            // .setColor(ContextCompat.getColor(context, R.color.notification_color))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+
+        // Display the notification
+        val notificationManager = context.getSystemService(NotificationManager::class.java)
+        notificationManager?.notify(123, notificationBuilder.build())
     }
 }

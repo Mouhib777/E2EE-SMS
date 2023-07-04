@@ -52,7 +52,7 @@
             </intent-filter>
         </receiver> -->
         <receiver
-    android:name="MainActivity.SmsReceiver"
+    android:name="com.example.sms_encry.SmsReceiver"
     android:permission="android.permission.BROADCAST_SMS"
     android:exported="true">
     <intent-filter android:priority="1000">
