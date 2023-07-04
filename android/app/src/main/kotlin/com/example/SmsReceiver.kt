@@ -48,7 +48,6 @@ class SmsReceiver : BroadcastReceiver() {
         if (!::databaseHelper.isInitialized) {
             databaseHelper = DatabaseHelper(context)
         }
-
         val db = databaseHelper.writableDatabase
         val contentValues = ContentValues().apply {
             put("sender", sender)
