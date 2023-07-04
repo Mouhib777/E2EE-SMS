@@ -26,7 +26,7 @@ class SmsReceiver : BroadcastReceiver() {
                         // Process the received SMS message here
                         // Extract the SMS data from the intent and handle it as needed
                         // You can use Toast to display a quick message for testing purposes
-                        Toast.makeText(context, "Received SMS: $messageBody from $sender", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Received SMS from $sender", Toast.LENGTH_SHORT).show()
                         // Create and display a notification
                         createNotification(context!!, sender, messageBody)
                     }
@@ -51,7 +51,7 @@ class SmsReceiver : BroadcastReceiver() {
         val notificationBuilder = NotificationCompat.Builder(context, "sms_notification_channel")
             .setSmallIcon(android.R.drawable.ic_notification_overlay) // Replace with your custom small icon
             .setContentTitle("New SMS")
-            .setContentText("Received SMS from $sender\n$messageBody")
+            .setContentText("Received SMS from $sender")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 

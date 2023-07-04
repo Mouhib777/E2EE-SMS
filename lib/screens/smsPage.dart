@@ -100,6 +100,7 @@ class _smsPageState extends State<smsPage> {
                             // EasyLoading.showToast(encryptedText);
                             _controller.clear();
                             _sendSMS(encryptedText, widget.num);
+                            FocusScope.of(context).unfocus();
                           },
                           child: Container(
                             padding: EdgeInsets.all(8),
