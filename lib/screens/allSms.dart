@@ -83,11 +83,11 @@ class _AllSmsState extends State<AllSms> {
                     trailing: IconButton(
                       onPressed: () {
                         final id = smsList[index]['id'];
-                        print("id = $id");
                         if (id != null) {
                           deleteSMS(id).then((_) {
                             setState(() {
-                              smsList.removeAt(index);
+                              smsListFuture =
+                                  fetchSavedSMS(); // Refresh the SMS messages after deletion
                             });
                           });
                         }
