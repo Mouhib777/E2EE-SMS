@@ -41,10 +41,10 @@ class _smsPageState extends State<smsPage> {
           sendDirect: true,
         );
         print(_result);
-        EasyLoading.showSuccess("SMS sent with encryption");
+        // EasyLoading.showSuccess("SMS sent with encryption");
       } catch (error) {
         print('Failed to send SMS: $error');
-        EasyLoading.showError('$error');
+        // EasyLoading.showError('$error');
         // Handle the error accordingly
       }
     }
@@ -97,7 +97,7 @@ class _smsPageState extends State<smsPage> {
                             final String encryptionKey = encryptionKey111;
                             String encryptedText =
                                 encryptAES(originalText, encryptionKey);
-                            EasyLoading.showToast(encryptedText);
+                            // EasyLoading.showToast(encryptedText);
                             _controller.clear();
                             _sendSMS(encryptedText, widget.num);
                           },

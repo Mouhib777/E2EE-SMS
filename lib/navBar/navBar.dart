@@ -20,13 +20,19 @@ class _navBarState extends State<navBar> {
     _controller = PersistentTabController(initialIndex: 0);
     List<Widget> _buildScreens() {
       return [
-        ContactScreen(),
         allSms(),
+        ContactScreen(),
       ];
     }
 
     List<PersistentBottomNavBarItem> _navBarsItems() {
       return [
+        PersistentBottomNavBarItem(
+          icon: Icon(CupertinoIcons.chat_bubble_2_fill),
+          title: ("Messages"),
+          activeColorPrimary: primaryColor,
+          inactiveColorPrimary: Colors.black,
+        ),
         PersistentBottomNavBarItem(
           // iconSize: 25,
           icon: Image.asset(
@@ -34,12 +40,6 @@ class _navBarState extends State<navBar> {
             height: 25,
           ),
           title: ("Contacts"),
-          activeColorPrimary: primaryColor,
-          inactiveColorPrimary: Colors.black,
-        ),
-        PersistentBottomNavBarItem(
-          icon: Icon(CupertinoIcons.chat_bubble_2_fill),
-          title: ("Messages"),
           activeColorPrimary: primaryColor,
           inactiveColorPrimary: Colors.black,
         ),

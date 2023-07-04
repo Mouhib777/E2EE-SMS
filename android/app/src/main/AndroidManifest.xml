@@ -40,7 +40,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <receiver
+        <!-- <receiver
             android:name="com.example.sms_encry.SmsReceiver"
             android:permission="android.permission.BROADCAST_SMS"
             android:exported="true">
@@ -48,7 +48,18 @@
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
             </intent-filter>
-        </receiver>
+        </receiver> -->
+        <receiver
+    android:name=".SmsReceiver"
+    android:permission="android.permission.BROADCAST_SMS"
+    android:exported="true">
+    <intent-filter>
+        <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+                        <action android:name="android.provider.Telephony.SMS_DELIVER" />
+
+    </intent-filter>
+</receiver>
+
         
 
         <receiver
