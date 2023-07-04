@@ -16,6 +16,8 @@ class AllSms extends StatefulWidget {
 }
 
 class _AllSmsState extends State<AllSms> {
+  final String encryptionPrefix = 'encrypted:';
+
   String decryptAES(String cipherText, String key) {
     final keyBytes = encrypt.Key.fromUtf8(key);
     final iv = encrypt.IV.fromLength(16);
@@ -65,24 +67,29 @@ class _AllSmsState extends State<AllSms> {
               itemCount: smsList!.length,
               itemBuilder: (context, index) {
                 final sender = smsList[index]['sender'];
-                final messageBody = decryptAES(
-                    smsList[index]['message_body'], encryptionKey111);
+                final messageBody = smsList[index]['message_body'];
+                final decryptedBody = messageBody.startsWith(encryptionPrefix)
+                    ? decryptAES(messageBody.substring(encryptionPrefix.length),
+                        encryptionKey111)
+                    : messageBody;
 
                 return InkWell(
                   onTap: () {
-                    pushNewScreenWithRouteSettings(context,
-                        screen: decryptionPage(
-                          title: sender,
-                          body: messageBody,
-                        ),
-                        settings: RouteSettings(),
-                        withNavBar: false,
-                        pageTransitionAnimation:
-                            PageTransitionAnimation.cupertino);
+                    pushNewScreenWithRouteSettings(
+                      context,
+                      screen: decryptionPage(
+                        title: sender,
+                        body: decryptedBody,
+                      ),
+                      settings: RouteSettings(),
+                      withNavBar: false,
+                      pageTransitionAnimation:
+                          PageTransitionAnimation.cupertino,
+                    );
                   },
                   child: ListTile(
                     title: Text(sender),
-                    subtitle: Text(messageBody),
+                    subtitle: Text(decryptedBody),
                     trailing: Icon(CupertinoIcons.chat_bubble),
                   ),
                 );
