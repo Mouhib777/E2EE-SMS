@@ -16,22 +16,14 @@ class AllSms extends StatefulWidget {
 }
 
 class _AllSmsState extends State<AllSms> {
-  Timer? timer; // Timer object to reload the page
+  Future<List<Map<String, dynamic>>>?
+      smsListFuture; // Future for fetching SMS messages
 
   @override
   void initState() {
     super.initState();
-    // Start the timer when the page is initialized
-    timer = Timer.periodic(Duration(seconds: 1), (_) {
-      setState(() {});
-    });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    // Cancel the timer when the page is disposed
-    timer?.cancel();
+    // Fetch SMS messages when the page is initialized
+    smsListFuture = fetchSavedSMS();
   }
 
   @override
@@ -41,14 +33,14 @@ class _AllSmsState extends State<AllSms> {
         title: Text("All SMS"),
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: fetchSavedSMS(),
+        future: smsListFuture, // Use the Future for fetching SMS messages
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             // Show a loading indicator while fetching the SMS messages
-            return CircularProgressIndicator();
+            return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             // Show an error message if there was an error fetching the SMS messages
-            return Text('Error: ${snapshot.error}');
+            return Center(child: Text('Error: ${snapshot.error}'));
           } else {
             // Display the SMS messages
             final smsList = snapshot.data;
@@ -82,6 +74,18 @@ class _AllSmsState extends State<AllSms> {
             );
           }
         },
+      ),
+      floatingActionButton: Positioned(
+        bottom: 56.0,
+        right: 16.0,
+        child: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              smsListFuture = fetchSavedSMS(); // Refresh the SMS messages
+            });
+          },
+          child: Icon(Icons.refresh),
+        ),
       ),
     );
   }
