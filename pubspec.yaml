@@ -47,6 +47,7 @@ dependencies:
   telephony: ^0.2.0
   sqflite: ^2.2.8+4
   path_provider: ^2.0.15
+  debounce_throttle: ^2.0.0
 
 dev_dependencies:
   flutter_test:

@@ -78,14 +78,26 @@ class _AllSmsState extends State<AllSms> {
                             PageTransitionAnimation.cupertino);
                   },
                   child: ListTile(
-                      title: Text(sender),
-                      subtitle: Text(messageBody),
-                      trailing: IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            CupertinoIcons.delete,
-                            color: Colors.red,
-                          ))),
+                    title: Text(sender),
+                    subtitle: Text(messageBody),
+                    trailing: IconButton(
+                      onPressed: () {
+                        final id = smsList[index]['id'];
+                        print("id = $id");
+                        if (id != null) {
+                          deleteSMS(id).then((_) {
+                            setState(() {
+                              smsList.removeAt(index);
+                            });
+                          });
+                        }
+                      },
+                      icon: Icon(
+                        CupertinoIcons.delete,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
                 );
               },
             );
@@ -122,5 +134,24 @@ class _AllSmsState extends State<AllSms> {
     final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
     final decrypted = encrypter.decrypt64(cipherText, iv: iv);
     return decrypted;
+  }
+
+  Future<void> deleteSMS(int id) async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      path.join(databasePath, 'sms_database.db'),
+      version: 1, // Specify the database version
+    );
+
+    try {
+      // Delete the SMS message with the given ID from the 'sms_table'
+      await database.delete(
+        'sms_table',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+    } finally {
+      await database.close();
+    }
   }
 }

@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/constant/constant.dart';
+import 'package:sms_encry/screens/smsPage.dart';
 
 class decryptionPage extends StatefulWidget {
   final String title;
@@ -26,6 +29,19 @@ class _decryptionPageState extends State<decryptionPage> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(widget.title),
+        actions: [
+          IconButton(
+              onPressed: () {
+                pushNewScreenWithRouteSettings(context,
+                    screen: smsPage(
+                      num: widget.title,
+                    ),
+                    settings: RouteSettings(),
+                    withNavBar: false,
+                    pageTransitionAnimation: PageTransitionAnimation.cupertino);
+              },
+              icon: Icon(CupertinoIcons.chat_bubble))
+        ],
       ),
       body: Center(
         child: Column(

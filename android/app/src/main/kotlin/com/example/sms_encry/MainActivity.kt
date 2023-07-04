@@ -68,7 +68,7 @@ class MainActivity : FlutterFragmentActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        // Unregister the SMS receiver
+        
         unregisterReceiver(SmsReceiver)
     }
 
