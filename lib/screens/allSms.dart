@@ -1,108 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
-// import 'package:sms_advanced/sms_advanced.dart';
-import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
-import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
-import 'package:sms_encry/screens/decryptionPage.dart';
+import 'package:sms_encry/screens/smsMessage.dart';
 
-class allSms extends StatefulWidget {
-  const allSms({super.key});
-
+class SmsListScreen extends StatefulWidget {
   @override
-  State<allSms> createState() => _allSmsState();
+  _SmsListScreenState createState() => _SmsListScreenState();
 }
 
-class _allSmsState extends State<allSms> {
-  final SmsQuery _query = SmsQuery();
-  List<SmsMessage> _messages = [];
-
-  @override
-  void initState() {
-    super.initState();
-  }
+class _SmsListScreenState extends State<SmsListScreen> {
+  List<SmsMessage> smsMessages = [];
 
   @override
   Widget build(BuildContext context) {
+    // Build the UI for displaying the SMS list
     return Scaffold(
       appBar: AppBar(
-        title: Text('SMS Messages'),
-        centerTitle: true,
+        title: Text('SMS List'),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(10.0),
-        child: _messages.isNotEmpty
-            ? _MessagesListView(
-                messages: _messages,
-              )
-            : Center(
-                child: InkWell(
-                  child: Text(
-                    'No messages to show',
-                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 20),
-                    // style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  onLongPress: () async {
-                    var permission = await Permission.sms.status;
-                    if (permission.isGranted) {
-                      final messages = await _query.querySms(
-                        kinds: [
-                          SmsQueryKind.inbox,
-                          SmsQueryKind.sent,
-                        ],
-                        // address: '+254712345789',
-                        count: 10,
-                      );
-                      debugPrint('sms inbox messages: ${messages.length}');
-
-                      setState(() => _messages = messages);
-                    } else {
-                      await Permission.sms.request();
-                    }
-                  },
-                ),
-              ),
+      body: ListView.builder(
+        itemCount: smsMessages.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text(smsMessages[index].sender),
+            subtitle: Text(smsMessages[index].messageBody),
+          );
+        },
       ),
-    );
-  }
-}
-
-class _MessagesListView extends StatelessWidget {
-  const _MessagesListView({
-    Key? key,
-    required this.messages,
-  }) : super(key: key);
-
-  final List<SmsMessage> messages;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      separatorBuilder: (BuildContext context, int index) => Divider(),
-      shrinkWrap: true,
-      itemCount: messages.length,
-      itemBuilder: (BuildContext context, int i) {
-        var message = messages[i];
-
-        return InkWell(
-          onTap: () {
-            pushNewScreenWithRouteSettings(context,
-                screen: decryptionPage(
-                  body: '${message.body}',
-                  title: '${message.sender}',
-                ),
-                settings: RouteSettings(),
-                withNavBar: false,
-                pageTransitionAnimation: PageTransitionAnimation.cupertino);
-          },
-          child: ListTile(
-            title: Text(
-                '${message.sender} ${message.date!.hour}h:${message.date!.minute}'),
-            subtitle: Text('${message.body}'),
-          ),
-        );
-      },
     );
   }
 }
