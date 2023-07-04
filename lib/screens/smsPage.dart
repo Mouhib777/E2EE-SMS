@@ -23,13 +23,13 @@ class _smsPageState extends State<smsPage> {
     return encrypted.base64;
   }
 
-  String decryptAES(String cipherText, String key) {
-    final keyBytes = encrypt.Key.fromUtf8(key);
-    final iv = encrypt.IV.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
-    final decrypted = encrypter.decrypt64(cipherText, iv: iv);
-    return decrypted;
-  }
+  // String decryptAES(String cipherText, String key) {
+  //   final keyBytes = encrypt.Key.fromUtf8(key);
+  //   final iv = encrypt.IV.fromLength(16);
+  //   final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
+  //   final decrypted = encrypter.decrypt64(cipherText, iv: iv);
+  //   return decrypted;
+  // }
 
   @override
   Widget build(BuildContext context) {
