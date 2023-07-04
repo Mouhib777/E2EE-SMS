@@ -3,6 +3,7 @@ package com.example.sms_encry
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.provider.Telephony
 import android.telephony.SmsMessage
 import android.widget.Toast
@@ -10,8 +11,6 @@ import android.os.Build
 import android.app.NotificationManager
 import android.app.NotificationChannel
 import androidx.core.app.NotificationCompat
-import android.R
-
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -47,19 +46,30 @@ class SmsReceiver : BroadcastReceiver() {
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             notificationManager?.createNotificationChannel(channel)
         }
-    
+
         // Create the notification
         val notificationBuilder = NotificationCompat.Builder(context, "sms_notification_channel")
-        .setSmallIcon(android.R.drawable.ic_dialog_info)
-        // Set a valid small icon resource
+            .setSmallIcon(android.R.drawable.ic_notification_overlay) // Replace with your custom small icon
             .setContentTitle("New SMS")
-            .setContentText("Received SMS from $sender: $messageBody")
+            .setContentText("Received SMS from $sender\n$messageBody")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
-    
+
         // Display the notification
         val notificationManager = context.getSystemService(NotificationManager::class.java)
         notificationManager?.notify(123, notificationBuilder.build())
     }
-    
+
+    companion object {
+        fun register(context: Context) {
+            val filter = IntentFilter(Telephony.Sms.Intents.SMS_RECEIVED_ACTION)
+            val receiver = SmsReceiver()
+            context.registerReceiver(receiver, filter)
+        }
+
+        fun unregister(context: Context) {
+            val receiver = SmsReceiver()
+            context.unregisterReceiver(receiver)
+        }
+    }
 }
