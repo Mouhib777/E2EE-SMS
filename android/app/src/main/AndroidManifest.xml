@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
-        android:label="sms_encry"
+        android:label="SMS"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
