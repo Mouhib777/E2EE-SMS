@@ -15,13 +15,13 @@ class decryptionPage extends StatefulWidget {
 }
 
 class _decryptionPageState extends State<decryptionPage> {
-  // String decryptAES(String cipherText, String key) {
-  //   final keyBytes = encrypt.Key.fromUtf8(key);
-  //   final iv = encrypt.IV.fromLength(16);
-  //   final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
-  //   final decrypted = encrypter.decrypt64(cipherText, iv: iv);
-  //   return decrypted;
-  // }
+  // // String decryptAES(String cipherText, String key) {
+  // //   final keyBytes = encrypt.Key.fromUtf8(key);
+  // //   final iv = encrypt.IV.fromLength(16);
+  // //   final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
+  // //   final decrypted = encrypter.decrypt64(cipherText, iv: iv);
+  // //   return decrypted;
+  // // }
 
   @override
   Widget build(BuildContext context) {
