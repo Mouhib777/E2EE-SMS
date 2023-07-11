@@ -47,7 +47,7 @@ class _navBarState extends State<navBar> {
     return Scaffold(
         body: PersistentTabView(
       context,
-      navBarHeight: 70,
+      navBarHeight: 55,
       controller: _controller,
       screens: _buildScreens(),
       items: _navBarsItems(),

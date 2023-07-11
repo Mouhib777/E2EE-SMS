@@ -48,6 +48,7 @@ dependencies:
   sqflite: ^2.2.8+4
   path_provider: ^2.0.15
   debounce_throttle: ^2.0.0
+  full_expandable_fab: ^0.0.1
 
 dev_dependencies:
   flutter_test:
