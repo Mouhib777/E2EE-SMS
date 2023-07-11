@@ -21,7 +21,7 @@ class AllSms extends StatefulWidget {
 
 class _AllSmsState extends State<AllSms> {
   String? title;
-  String? number;
+  String number = "";
   final GlobalKey<ExpandableFabState> keyFab = GlobalKey<ExpandableFabState>();
   Future<List<Map<String, dynamic>>>?
       smsListFuture; // Future for fetching SMS messages
@@ -123,7 +123,16 @@ class _AllSmsState extends State<AllSms> {
                         width: 1,
                       ),
                       IconButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          pushNewScreenWithRouteSettings(
+                            context,
+                            screen: smsPage(num: number.toString()),
+                            settings: RouteSettings(),
+                            withNavBar: false,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.cupertino,
+                          );
+                        },
                         icon: Icon(
                           Icons.add,
                         ),
@@ -132,7 +141,17 @@ class _AllSmsState extends State<AllSms> {
                     ],
                   ),
                   SizedBox(
-                    height: 30,
+                    height: 10,
+                  ),
+                  Text(
+                    "Or , Select from your contacts",
+                    style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 15),
+                  ),
+                  SizedBox(
+                    height: 20,
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.9,
@@ -220,7 +239,9 @@ class _AllSmsState extends State<AllSms> {
           elevation: 1,
           backgroundColor: Colors.black87,
           foregroundColor: Colors.white,
-          title: Text("All SMS"),
+          title: Text(
+            "All SMS",
+          ),
           centerTitle: true,
           actions: [
             IconButton(
