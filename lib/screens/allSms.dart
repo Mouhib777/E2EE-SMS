@@ -45,6 +45,7 @@ class _AllSmsState extends State<AllSms> {
               icon: Icon(Icons.refresh))
         ],
       ),
+      floatingActionButton: AboutDialog(),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: smsListFuture, // Use the Future for fetching SMS messages
         builder: (context, snapshot) {
