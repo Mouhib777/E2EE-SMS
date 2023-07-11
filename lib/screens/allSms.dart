@@ -275,12 +275,8 @@ class _AllSmsState extends State<AllSms> {
                 itemCount: smsList!.length,
                 itemBuilder: (context, index) {
                   final sender = smsList[index]['sender'];
-                  final messageBody =
-                      // decryptAES(
-                      smsList[index]['message_body'];
-                  // ,
-                  //  encryptionKey111
-                  //  );
+                  final messageBody = decryptAES(
+                      smsList[index]['message_body'], encryptionKey111);
 
                   return InkWell(
                     onTap: () {
@@ -346,13 +342,18 @@ class _AllSmsState extends State<AllSms> {
     }
   }
 
-  // String decryptAES(String cipherText, String key) {
-  //   final keyBytes = encrypt.Key.fromUtf8(key);
-  //   final iv = encrypt.IV.fromLength(16);
-  //   final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
-  //   final decrypted = encrypter.decrypt64(cipherText, iv: iv);
-  //   return decrypted;
-  // }
+  String decryptAES(String cipherText, String key) {
+    if (cipherText.isEmpty || key.isEmpty) {
+      return ""; // Return an empty string if either cipherText or key is empty
+    }
+
+    final keyBytes = encrypt.Key.fromUtf8(key);
+    final iv = encrypt.IV.fromLength(16);
+    final encrypter = encrypt.Encrypter(encrypt.AES(keyBytes));
+    final decrypted = encrypter.decrypt64(cipherText, iv: iv);
+
+    return decrypted;
+  }
 
   Future<void> deleteSMS(int id) async {
     final databasePath = await getDatabasesPath();
