@@ -275,48 +275,43 @@ class _AllSmsState extends State<AllSms> {
                 itemCount: smsList!.length,
                 itemBuilder: (context, index) {
                   final sender = smsList[index]['sender'];
-                  final String sms = smsList[index]['message_body'];
-                  if (sms.contains('encryption')) {
-                    final messageBody = decryptAES(
-                        smsList[index]['message_body'], encryptionKey111);
-                  } else {
-                    final messageBody = smsList[index]['message_body'];
+                  final messageBody = decryptAES(
+                      smsList[index]['message_body'], encryptionKey111);
 
-                    return InkWell(
-                      onTap: () {
-                        pushNewScreenWithRouteSettings(context,
-                            screen: decryptionPage(
-                              title: sender,
-                              body: messageBody,
-                            ),
-                            settings: RouteSettings(),
-                            withNavBar: false,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.cupertino);
-                      },
-                      child: ListTile(
-                        title: Text(sender),
-                        subtitle: Text(messageBody),
-                        trailing: IconButton(
-                          onPressed: () {
-                            final id = smsList[index]['id'];
-                            if (id != null) {
-                              deleteSMS(id).then((_) {
-                                setState(() {
-                                  smsListFuture =
-                                      fetchSavedSMS(); // Refresh the SMS messages after deletion
-                                });
-                              });
-                            }
-                          },
-                          icon: Icon(
-                            CupertinoIcons.delete,
-                            color: Colors.red,
+                  return InkWell(
+                    onTap: () {
+                      pushNewScreenWithRouteSettings(context,
+                          screen: decryptionPage(
+                            title: sender,
+                            body: messageBody,
                           ),
+                          settings: RouteSettings(),
+                          withNavBar: false,
+                          pageTransitionAnimation:
+                              PageTransitionAnimation.cupertino);
+                    },
+                    child: ListTile(
+                      title: Text(sender),
+                      subtitle: Text(messageBody),
+                      trailing: IconButton(
+                        onPressed: () {
+                          final id = smsList[index]['id'];
+                          if (id != null) {
+                            deleteSMS(id).then((_) {
+                              setState(() {
+                                smsListFuture =
+                                    fetchSavedSMS(); // Refresh the SMS messages after deletion
+                              });
+                            });
+                          }
+                        },
+                        icon: Icon(
+                          CupertinoIcons.delete,
+                          color: Colors.red,
                         ),
                       ),
-                    );
-                  }
+                    ),
+                  );
                 },
               );
             }

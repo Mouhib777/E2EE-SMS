@@ -16,9 +16,9 @@ class decryptionPage extends StatefulWidget {
 
 class _decryptionPageState extends State<decryptionPage> {
   String decryptAES(String cipherText, String key) {
-    if (cipherText.isEmpty || key.isEmpty) {
-      return ""; // Return an empty string if either cipherText or key is empty
-    }
+    // if (cipherText.isEmpty || key.isEmpty) {
+    //   return ""; // Return an empty string if either cipherText or key is empty
+    // }
 
     final keyBytes = encrypt.Key.fromUtf8(key);
     final iv = encrypt.IV.fromLength(16);
