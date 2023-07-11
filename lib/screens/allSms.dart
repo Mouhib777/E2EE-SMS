@@ -36,17 +36,22 @@ class _AllSmsState extends State<AllSms> {
       backgroundColor: Colors.white,
       closeIconColor: Colors.black,
       duration: const Duration(milliseconds: 500),
-      innerChild: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text('Type your message here'),
-          TextField(),
-          ElevatedButton(
-              onPressed: () {
-                keyFab.currentState?.close();
-              },
-              child: const Text('Send sms'))
-        ],
+      innerChild: Expanded(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Type your message here'),
+            TextField(),
+            SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  keyFab.currentState?.close();
+                },
+                child: const Text('Send sms'))
+          ],
+        ),
       ),
       icon: Icon(
         Icons.add,
