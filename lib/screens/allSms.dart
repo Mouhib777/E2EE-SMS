@@ -31,90 +31,111 @@ class _AllSmsState extends State<AllSms> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 1,
-        backgroundColor: Colors.black87,
-        foregroundColor: Colors.white,
-        title: Text("All SMS"),
-        centerTitle: true,
-        actions: [
-          IconButton(
+    return FullExpandableFab(
+      key: keyFab,
+      backgroundColor: Colors.white,
+      closeIconColor: Colors.black,
+      duration: const Duration(milliseconds: 500),
+      innerChild: Column(
+        children: [
+          const Text('Inner widget'),
+          const TextField(),
+          ElevatedButton(
               onPressed: () {
-                setState(() {
-                  smsListFuture = fetchSavedSMS(); // Refresh the SMS messages
-                });
+                keyFab.currentState?.close();
               },
-              icon: Icon(Icons.refresh))
+              child: const Text('Close me'))
         ],
       ),
-      // floatingActionButton: FloatingActionButton(onPressed: () {}),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: smsListFuture, // Use the Future for fetching SMS messages
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // Show a loading indicator while fetching the SMS messages
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            // Show an error message if there was an error fetching the SMS messages
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            // Display the SMS messages
-            final smsList = snapshot.data;
+      icon: const Icon(
+        Icons.plus_one,
+        color: Colors.white,
+      ),
+      child: Scaffold(
+        appBar: AppBar(
+          elevation: 1,
+          backgroundColor: Colors.black87,
+          foregroundColor: Colors.white,
+          title: Text("All SMS"),
+          centerTitle: true,
+          actions: [
+            IconButton(
+                onPressed: () {
+                  setState(() {
+                    smsListFuture = fetchSavedSMS(); // Refresh the SMS messages
+                  });
+                },
+                icon: Icon(Icons.refresh))
+          ],
+        ),
+        // floatingActionButton: FloatingActionButton(onPressed: () {}),
+        body: FutureBuilder<List<Map<String, dynamic>>>(
+          future: smsListFuture, // Use the Future for fetching SMS messages
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              // Show a loading indicator while fetching the SMS messages
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              // Show an error message if there was an error fetching the SMS messages
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              // Display the SMS messages
+              final smsList = snapshot.data;
 
-            return ListView.separated(
-              separatorBuilder: (BuildContext context, int index) => Divider(
-                indent: 10,
-                endIndent: 10,
-              ),
-              itemCount: smsList!.length,
-              itemBuilder: (context, index) {
-                final sender = smsList[index]['sender'];
-                final messageBody =
-                    // decryptAES(
-                    smsList[index]['message_body'];
-                // ,
-                //  encryptionKey111
-                //  );
+              return ListView.separated(
+                separatorBuilder: (BuildContext context, int index) => Divider(
+                  indent: 10,
+                  endIndent: 10,
+                ),
+                itemCount: smsList!.length,
+                itemBuilder: (context, index) {
+                  final sender = smsList[index]['sender'];
+                  final messageBody =
+                      // decryptAES(
+                      smsList[index]['message_body'];
+                  // ,
+                  //  encryptionKey111
+                  //  );
 
-                return InkWell(
-                  onTap: () {
-                    pushNewScreenWithRouteSettings(context,
-                        screen: decryptionPage(
-                          title: sender,
-                          body: messageBody,
-                        ),
-                        settings: RouteSettings(),
-                        withNavBar: false,
-                        pageTransitionAnimation:
-                            PageTransitionAnimation.cupertino);
-                  },
-                  child: ListTile(
-                    title: Text(sender),
-                    subtitle: Text(messageBody),
-                    trailing: IconButton(
-                      onPressed: () {
-                        final id = smsList[index]['id'];
-                        if (id != null) {
-                          deleteSMS(id).then((_) {
-                            setState(() {
-                              smsListFuture =
-                                  fetchSavedSMS(); // Refresh the SMS messages after deletion
+                  return InkWell(
+                    onTap: () {
+                      pushNewScreenWithRouteSettings(context,
+                          screen: decryptionPage(
+                            title: sender,
+                            body: messageBody,
+                          ),
+                          settings: RouteSettings(),
+                          withNavBar: false,
+                          pageTransitionAnimation:
+                              PageTransitionAnimation.cupertino);
+                    },
+                    child: ListTile(
+                      title: Text(sender),
+                      subtitle: Text(messageBody),
+                      trailing: IconButton(
+                        onPressed: () {
+                          final id = smsList[index]['id'];
+                          if (id != null) {
+                            deleteSMS(id).then((_) {
+                              setState(() {
+                                smsListFuture =
+                                    fetchSavedSMS(); // Refresh the SMS messages after deletion
+                              });
                             });
-                          });
-                        }
-                      },
-                      icon: Icon(
-                        CupertinoIcons.delete,
-                        color: Colors.red,
+                          }
+                        },
+                        icon: Icon(
+                          CupertinoIcons.delete,
+                          color: Colors.red,
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            );
-          }
-        },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }
