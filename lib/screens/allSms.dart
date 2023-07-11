@@ -37,17 +37,18 @@ class _AllSmsState extends State<AllSms> {
       closeIconColor: Colors.black,
       duration: const Duration(milliseconds: 500),
       innerChild: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const Text('Inner widget'),
-          const TextField(),
+          Text('Type your message here'),
+          TextField(),
           ElevatedButton(
               onPressed: () {
                 keyFab.currentState?.close();
               },
-              child: const Text('Close me'))
+              child: const Text('Send sms'))
         ],
       ),
-      icon: const Icon(
+      icon: Icon(
         Icons.add,
         color: Colors.white,
       ),
