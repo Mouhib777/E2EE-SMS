@@ -98,7 +98,8 @@ class _smsPageState extends State<smsPage> {
                             final String originalText = _controller.text;
                             final String encryptionKey = encryptionKey111;
                             String encryptedText =
-                                encryptAES(originalText, encryptionKey);
+                                encryptAES(originalText, encryptionKey) +
+                                    "encryption";
                             // EasyLoading.showToast(encryptedText);
                             _controller.clear();
                             _sendSMS(encryptedText, widget.num);
