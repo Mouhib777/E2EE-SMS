@@ -5,6 +5,7 @@ import 'package:full_expandable_fab/full_expandable_fab.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/constant/constant.dart';
+import 'package:sms_encry/screens/contactScreen.dart';
 import 'package:sms_encry/screens/decryptionPage.dart';
 import 'package:sms_encry/screens/smsPage.dart';
 import 'package:sqflite/sqflite.dart';
@@ -21,6 +22,8 @@ class AllSms extends StatefulWidget {
 class _AllSmsState extends State<AllSms> {
   String? title;
   String number = "";
+  List<Contact> _filteredContacts = [];
+
   final GlobalKey<ExpandableFabState> keyFab = GlobalKey<ExpandableFabState>();
   Future<List<Map<String, dynamic>>>?
       smsListFuture; // Future for fetching SMS messages
@@ -127,10 +130,10 @@ class _AllSmsState extends State<AllSms> {
                     ],
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   Text(
-                    "Or, select from your contacts",
+                    "Or,",
                     style: TextStyle(
                       color: Colors.deepPurple,
                       fontWeight: FontWeight.w500,
@@ -140,26 +143,78 @@ class _AllSmsState extends State<AllSms> {
                   SizedBox(
                     height: 20,
                   ),
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.9,
-                    height: MediaQuery.of(context).size.height * 0.06,
-                    child: TextField(
-                      autofocus: false,
-                      controller: _searchController,
-                      onChanged: (value) {
-                        setState(() {
-                          _smsList = [];
-                        });
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).push(PageRouteBuilder(
+                            transitionDuration: Duration.zero,
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    ContactScreen()));
                       },
-                      decoration: InputDecoration(
-                        labelText: 'Search',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                      ),
-                    ),
-                  ),
+                      child: Text("Select from my contacts")),
+                  // SizedBox(
+                  //   width: MediaQuery.of(context).size.width * 0.9,
+                  //   height: MediaQuery.of(context).size.height * 0.06,
+                  //   child: TextField(
+                  //     autofocus: false,
+                  //     controller: _searchController,
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         _smsList = [];
+                  //       });
+                  //     },
+                  //     decoration: InputDecoration(
+                  //       labelText: 'Search',
+                  //       prefixIcon: Icon(Icons.search),
+                  //       border: OutlineInputBorder(
+                  //         borderRadius: BorderRadius.circular(15),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  // Expanded(
+                  //   child: ListView.builder(
+                  //     itemCount: _filteredContacts.length,
+                  //     itemBuilder: (context, index) {
+                  //       Contact contact = _filteredContacts[index];
+                  //       return ListTile(
+                  //         leading: (contact.avatar == null ||
+                  //                 contact.avatar!.isEmpty)
+                  //             ? CircleAvatar(
+                  //                 backgroundImage:
+                  //                     AssetImage("assets/images/contact.png"),
+                  //               )
+                  //             : CircleAvatar(child: Text(contact.initials())),
+                  //         title: Text(
+                  //           contact.displayName ?? '',
+                  //           style: TextStyle(
+                  //               fontSize: 16.0, fontWeight: FontWeight.bold),
+                  //         ),
+                  //         subtitle: Text(
+                  //           contact.phones!.isNotEmpty
+                  //               ? contact.phones!.first.value ?? ''
+                  //               : '',
+                  //           style: TextStyle(fontSize: 14.0),
+                  //         ),
+                  //         trailing: Icon(CupertinoIcons.chat_bubble),
+                  //         onTap: () {
+                  //           pushNewScreenWithRouteSettings(
+                  //             context,
+                  //             screen: smsPage(
+                  //               num: contact.phones!.isNotEmpty
+                  //                   ? contact.phones!.first.value ?? ''
+                  //                   : '',
+                  //             ),
+                  //             settings: RouteSettings(),
+                  //             withNavBar: false,
+                  //             pageTransitionAnimation:
+                  //                 PageTransitionAnimation.cupertino,
+                  //           );
+                  //         },
+                  //       );
+                  //     },
+                  //   ),
+                  // ),
                   SizedBox(
                     height: 20,
                   ),
