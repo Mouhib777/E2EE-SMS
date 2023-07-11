@@ -48,7 +48,7 @@ class _AllSmsState extends State<AllSms> {
         ],
       ),
       icon: const Icon(
-        Icons.plus_one,
+        Icons.add,
         color: Colors.white,
       ),
       child: Scaffold(
