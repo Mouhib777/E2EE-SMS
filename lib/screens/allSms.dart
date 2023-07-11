@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:full_expandable_fab/full_expandable_fab.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/constant/constant.dart';
 import 'package:sms_encry/screens/decryptionPage.dart';
@@ -16,6 +17,8 @@ class AllSms extends StatefulWidget {
 }
 
 class _AllSmsState extends State<AllSms> {
+  String? title;
+  final GlobalKey<ExpandableFabState> keyFab = GlobalKey<ExpandableFabState>();
   Future<List<Map<String, dynamic>>>?
       smsListFuture; // Future for fetching SMS messages
 
