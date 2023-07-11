@@ -1,9 +1,12 @@
+import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:full_expandable_fab/full_expandable_fab.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/constant/constant.dart';
 import 'package:sms_encry/screens/decryptionPage.dart';
+import 'package:sms_encry/screens/smsPage.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'package:encrypt/encrypt.dart' as encrypt;
@@ -21,13 +24,56 @@ class _AllSmsState extends State<AllSms> {
   final GlobalKey<ExpandableFabState> keyFab = GlobalKey<ExpandableFabState>();
   Future<List<Map<String, dynamic>>>?
       smsListFuture; // Future for fetching SMS messages
+  List<Contact> _contacts = [];
+  List<Contact> _filteredContacts = [];
+  bool _isLoading = false;
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // Fetch SMS messages when the page is initialized
+    fetchContacts();
     smsListFuture = fetchSavedSMS();
+    _searchController.addListener(() {
+      if (_searchController.text.isEmpty) {
+        // If search text is empty, display all contacts
+        setState(() {
+          _filteredContacts = _contacts;
+        });
+      }
+    });
   }
+
+  void fetchContacts() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    if (await Permission.contacts.request().isGranted) {
+      Iterable<Contact> contacts = await ContactsService.getContacts();
+
+      setState(() {
+        _contacts = contacts.toList();
+        _filteredContacts = _contacts;
+        _isLoading = false;
+      });
+    } else {
+      // Handle permissions not granted  void fetchContacts() async {
+      setState(() {
+        _isLoading = true;
+      });
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Fetch SMS messages when the page is initialized
+  //   smsListFuture = fetchSavedSMS();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -36,23 +82,107 @@ class _AllSmsState extends State<AllSms> {
       backgroundColor: Colors.white,
       closeIconColor: Colors.black,
       duration: const Duration(milliseconds: 500),
-      innerChild: Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Type your message here'),
-            TextField(),
-            SizedBox(
-              height: 20,
+      innerChild: _isLoading
+          ? Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text("Importing all contacts...")
+                  ],
+                ),
+              ),
+            )
+          : Expanded(
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [],
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.9,
+                    height: MediaQuery.of(context).size.height * 0.06,
+                    child: TextField(
+                      autofocus: false,
+                      controller: _searchController,
+                      onChanged: (value) {
+                        // Filter the contacts based on the search text
+                        List<Contact> filteredContacts =
+                            _contacts.where((contact) {
+                          return contact.displayName
+                                  ?.toLowerCase()
+                                  .contains(value.toLowerCase()) ??
+                              false;
+                        }).toList();
+
+                        setState(() {
+                          _filteredContacts = filteredContacts;
+                        });
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Search',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _filteredContacts.length,
+                      itemBuilder: (context, index) {
+                        Contact contact = _filteredContacts[index];
+                        return ListTile(
+                          leading: (contact.avatar == null ||
+                                  contact.avatar!.isEmpty)
+                              ? CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage("assets/images/contact.png"),
+                                )
+                              : CircleAvatar(child: Text(contact.initials())),
+                          title: Text(
+                            contact.displayName ?? '',
+                            style: TextStyle(
+                                fontSize: 16.0, fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            contact.phones!.isNotEmpty
+                                ? contact.phones!.first.value ?? ''
+                                : '',
+                            style: TextStyle(fontSize: 14.0),
+                          ),
+                          trailing: Icon(CupertinoIcons.chat_bubble),
+                          onTap: () {
+                            pushNewScreenWithRouteSettings(
+                              context,
+                              screen: smsPage(
+                                num: contact.phones!.isNotEmpty
+                                    ? contact.phones!.first.value ?? ''
+                                    : '',
+                              ),
+                              settings: RouteSettings(),
+                              withNavBar: false,
+                              pageTransitionAnimation:
+                                  PageTransitionAnimation.cupertino,
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
-            ElevatedButton(
-                onPressed: () {
-                  keyFab.currentState?.close();
-                },
-                child: const Text('Send sms'))
-          ],
-        ),
-      ),
       icon: Icon(
         Icons.add,
         color: Colors.white,
