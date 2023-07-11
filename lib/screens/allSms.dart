@@ -62,7 +62,7 @@ class _AllSmsState extends State<AllSms> {
             return ListView.separated(
               separatorBuilder: (BuildContext context, int index) => Divider(
                 indent: 10,
-                endIndent: ,
+                endIndent: 10,
               ),
               itemCount: smsList!.length,
               itemBuilder: (context, index) {
