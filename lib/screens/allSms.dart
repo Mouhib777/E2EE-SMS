@@ -21,6 +21,7 @@ class AllSms extends StatefulWidget {
 
 class _AllSmsState extends State<AllSms> {
   String? title;
+  String? number;
   final GlobalKey<ExpandableFabState> keyFab = GlobalKey<ExpandableFabState>();
   Future<List<Map<String, dynamic>>>?
       smsListFuture; // Future for fetching SMS messages
@@ -104,7 +105,34 @@ class _AllSmsState extends State<AllSms> {
                     height: 20,
                   ),
                   Row(
-                    children: [],
+                    children: [
+                      Text("Recepient:"),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          height: 25,
+                          child: TextField(
+                            keyboardType: TextInputType.number,
+                            onChanged: (value) {
+                              number = value;
+                            },
+                          )),
+                      SizedBox(
+                        width: 1,
+                      ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(
+                          Icons.add,
+                        ),
+                        iconSize: 30,
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 30,
                   ),
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.9,
