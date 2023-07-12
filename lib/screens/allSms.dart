@@ -94,12 +94,14 @@ class _AllSmsState extends State<AllSms> {
                   ),
                   Row(
                     children: [
-                      Text("Recipient:"),
+                      Text(
+                        "Recipient:",
+                      ),
                       SizedBox(
                         width: 5,
                       ),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
+                        width: MediaQuery.of(context).size.width * 0.55,
                         height: 25,
                         child: TextField(
                           keyboardType: TextInputType.number,
@@ -317,29 +319,87 @@ class _AllSmsState extends State<AllSms> {
                   final messages = groupedSmsList[index]['messages'];
 
                   return ExpansionTile(
+                    subtitle: Text(
+                      "${messages.length} SMS",
+                      style: TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
                     title: Text(sender),
-                    children: messages
-                        .map<Widget>((sms) => ListTile(
-                              title: Text(decryptAES(
-                                  sms['message_body'], encryptionKey111)),
-                              trailing: IconButton(
-                                onPressed: () {
-                                  final id = sms['id'];
-                                  if (id != null) {
-                                    deleteSMS(id).then((_) {
-                                      setState(() {
-                                        smsListFuture = fetchSavedSMS();
-                                      });
-                                    });
-                                  }
-                                },
-                                icon: Icon(
-                                  CupertinoIcons.delete,
-                                  color: Colors.red,
+                    trailing: GestureDetector(
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "SMS to $sender",
+                                  style: TextStyle(fontSize: 16),
                                 ),
+                              ],
+                            ),
+                            content: Text(
+                                'To disable ADB, please follow these steps:\n\n'
+                                '1. Open the Settings app on your device.\n'
+                                '2. Navigate to the Developer Options menu.\n'
+                                '3. Disable the "Android Debugging" or "USB Debugging" option.\n'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('OK'),
                               ),
-                            ))
-                        .toList(),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: Text('Cancel'),
+                              ),
+                            ],
+                          ),
+                        );
+                        // Navigator.of(context).push(PageRouteBuilder(
+                        //     transitionDuration: Duration.zero,
+                        //     pageBuilder:
+                        //         (context, animation, secondaryAnimation) =>
+                        //             smsPage(
+                        //               num: sender,
+                        //             )));
+                        Map<String, bool> expansionStateMap = {};
+                        // Handle the action when clicking on the right side
+                        setState(() {
+                          if (expansionStateMap[sender] != null) {
+                            expansionStateMap[sender] =
+                                !expansionStateMap[sender]!;
+                          }
+                        });
+                      },
+                      child: Icon(
+                        CupertinoIcons.chat_bubble,
+                        color: Colors.black,
+                      ),
+                    ),
+                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ...messages.map<Widget>((sms) => ListTile(
+                            title: Text(sms['message_body']),
+                            trailing: IconButton(
+                              onPressed: () {
+                                final id = sms['id'];
+                                if (id != null) {
+                                  deleteSMS(id).then((_) {
+                                    setState(() {
+                                      smsListFuture = fetchSavedSMS();
+                                    });
+                                  });
+                                }
+                              },
+                              icon: Icon(
+                                CupertinoIcons.delete,
+                                color: Colors.red,
+                              ),
+                            ),
+                          )),
+                    ],
                   );
                 },
               );

@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       builder: EasyLoading.init(),
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: '',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
