@@ -1,6 +1,7 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sms/flutter_sms.dart';
 import 'package:full_expandable_fab/full_expandable_fab.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -328,6 +329,35 @@ class _AllSmsState extends State<AllSms> {
                     title: Text(sender),
                     trailing: GestureDetector(
                       onTap: () {
+                        String encryptAES(String plainText, String key) {
+                          final keyBytes = encrypt.Key.fromUtf8(key);
+                          final iv = encrypt.IV.fromLength(16);
+                          final encrypter =
+                              encrypt.Encrypter(encrypt.AES(keyBytes));
+                          final encrypted =
+                              encrypter.encrypt(plainText, iv: iv);
+                          return encrypted.base64;
+                        }
+
+                        void _sendSMS(String message, String recipient) async {
+                          try {
+                            String _result = await sendSMS(
+                              message: message,
+                              recipients: [recipient],
+                              sendDirect: true,
+                            );
+                            print(_result);
+                            // EasyLoading.showSuccess("SMS sent with encryption");
+                          } catch (error) {
+                            print('Failed to send SMS: $error');
+                            // EasyLoading.showError('$error');
+                            // Handle the error accordingly
+                          }
+                        }
+
+                        TextEditingController _controller =
+                            TextEditingController();
+
                         showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
@@ -340,14 +370,26 @@ class _AllSmsState extends State<AllSms> {
                                 ),
                               ],
                             ),
-                            content: TextField(),
+                            content: TextField(
+                              controller: _controller,
+                            ),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
                                 child: Text('Cancel'),
                               ),
                               TextButton(
-                                onPressed: () => Navigator.pop(context),
+                                onPressed: () {
+                                  final String originalText = _controller.text;
+                                  final String encryptionKey = encryptionKey111;
+                                  String encryptedText =
+                                      encryptAES(originalText, encryptionKey) +
+                                          "encryption";
+                                  // EasyLoading.showToast(encryptedText);
+                                  _controller.clear();
+                                  _sendSMS(encryptedText, sender);
+                                  FocusScope.of(context).unfocus();
+                                },
                                 child: Text('Send'),
                               ),
                             ],
