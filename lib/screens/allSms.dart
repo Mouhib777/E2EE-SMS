@@ -340,19 +340,15 @@ class _AllSmsState extends State<AllSms> {
                                 ),
                               ],
                             ),
-                            content: Text(
-                                'To disable ADB, please follow these steps:\n\n'
-                                '1. Open the Settings app on your device.\n'
-                                '2. Navigate to the Developer Options menu.\n'
-                                '3. Disable the "Android Debugging" or "USB Debugging" option.\n'),
+                            content: TextField(),
                             actions: <Widget>[
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: Text('OK'),
+                                child: Text('Cancel'),
                               ),
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                child: Text('Cancel'),
+                                child: Text('Send'),
                               ),
                             ],
                           ),
