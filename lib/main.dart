@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:sms_encry/screens/allSms.dart';
-import 'package:sms_encry/screens/contactScreen.dart';
-import 'package:sms_encry/screens/smsPage.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  // const MyApp({super.key});
 
   // This widget is the root of your application.
   @override

@@ -2,12 +2,16 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:sms_encry/constant/constant.dart';
 import 'package:sms_encry/screens/smsPage.dart';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:path/path.dart' as path;
+
+import 'package:sqflite/sqflite.dart';
 
 class ContactScreen extends StatefulWidget {
   const ContactScreen({Key? key});
@@ -21,7 +25,7 @@ class _ContactScreenState extends State<ContactScreen> {
   List<Contact> _filteredContacts = [];
   bool _isLoading = false;
   TextEditingController _searchController = TextEditingController();
-
+  final MethodChannel _channel = MethodChannel('com.example.database_helper');
   @override
   void initState() {
     super.initState();
@@ -54,6 +58,26 @@ class _ContactScreenState extends State<ContactScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> saveSentSMS(String recipient, String message) async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      path.join(databasePath, 'sms_database.db'),
+      version: 1,
+    );
+
+    try {
+      await database.insert(
+        'sms_table',
+        {
+          'sender': recipient,
+          'message_body': message,
+        },
+      );
+    } finally {
+      await database.close();
     }
   }
 
@@ -154,80 +178,98 @@ class _ContactScreenState extends State<ContactScreen> {
                         ),
                         trailing: Icon(CupertinoIcons.chat_bubble),
                         onTap: () {
-                          String encryptAES(String plainText, String key) {
-                            final keyBytes = encrypt.Key.fromUtf8(key);
-                            final iv = encrypt.IV.fromLength(16);
-                            final encrypter =
-                                encrypt.Encrypter(encrypt.AES(keyBytes));
-                            final encrypted =
-                                encrypter.encrypt(plainText, iv: iv);
-                            return encrypted.base64;
-                          }
-
-                          void _sendSMS(
-                              String message, String recipient) async {
-                            try {
-                              String _result = await sendSMS(
-                                message: message,
-                                recipients: [recipient],
-                                sendDirect: true,
-                              );
-                              print(_result);
-                              // EasyLoading.showSuccess("SMS sent with encryption");
-                            } catch (error) {
-                              print('Failed to send SMS: $error');
-                              // EasyLoading.showError('$error');
-                              // Handle the error accordingly
+                          if (contact.phones!.isEmpty) {
+                            EasyLoading.showError("No number founded");
+                          } else {
+                            String encryptAES(String plainText, String key) {
+                              final keyBytes = encrypt.Key.fromUtf8(key);
+                              final iv = encrypt.IV.fromLength(16);
+                              final encrypter =
+                                  encrypt.Encrypter(encrypt.AES(keyBytes));
+                              final encrypted =
+                                  encrypter.encrypt(plainText, iv: iv);
+                              return encrypted.base64;
                             }
-                          }
 
-                          TextEditingController _controller =
-                              TextEditingController();
+                            void _sendSMS(
+                                String message, String recipient) async {
+                              try {
+                                String _result = await sendSMS(
+                                  message: message,
+                                  recipients: [recipient],
+                                  sendDirect: true,
+                                );
+                                print(_result);
+                                await saveSentSMS(recipient, message);
+                                // EasyLoading.showSuccess("SMS sent with encryption");
+                              } catch (error) {
+                                print('Failed to send SMS: $error');
+                                // EasyLoading.showError('$error');
+                                // Handle the error accordingly
+                              }
+                            }
 
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "SMS to ${contact.phones!.isNotEmpty ? contact.phones!.first.value ?? '' : ''}",
-                                    style: TextStyle(fontSize: 16),
+                            TextEditingController _controller =
+                                TextEditingController();
+
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "SMS to ${contact.phones!.isNotEmpty ? contact.phones!.first.value ?? '' : ''}",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
+                                content: TextField(
+                                  controller: _controller,
+                                ),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      if (contact.phones == "") {
+                                        EasyLoading.showError(
+                                            'No number founded');
+                                      } else {
+                                        Navigator.pop(context);
+                                        final String originalText =
+                                            _controller.text;
+                                        final String encryptionKey =
+                                            encryptionKey111;
+                                        String encryptedText = encryptAES(
+                                            originalText, encryptionKey);
+                                        _controller.clear();
+
+                                        _sendSMS(
+                                            encryptedText,
+                                            contact.phones!.isNotEmpty
+                                                ? contact.phones!.first.value ??
+                                                    ''
+                                                : '');
+                                      }
+
+                                      // await saveSentSMS(
+                                      //     contact.phones!.isNotEmpty
+                                      //         ? contact.phones!.first.value ?? ''
+                                      //         : '',
+                                      //     encryptedText);
+
+                                      // FocusScope.of(context).unfocus();
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Send'),
                                   ),
                                 ],
                               ),
-                              content: TextField(
-                                controller: _controller,
-                              ),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text('Cancel'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    final String originalText =
-                                        _controller.text;
-                                    final String encryptionKey =
-                                        encryptionKey111;
-                                    String encryptedText = encryptAES(
-                                            originalText, encryptionKey) +
-                                        "encryption";
-                                    // EasyLoading.showToast(encryptedText);
-                                    _controller.clear();
-                                    _sendSMS(
-                                      encryptedText,
-                                      contact.phones!.isNotEmpty
-                                          ? contact.phones!.first.value ?? ''
-                                          : '',
-                                    );
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                  child: Text('Send'),
-                                ),
-                              ],
-                            ),
-                          );
+                            );
+                          }
                         },
                       );
                     },

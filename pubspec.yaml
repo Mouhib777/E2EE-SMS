@@ -50,6 +50,7 @@ dependencies:
   debounce_throttle: ^2.0.0
   full_expandable_fab: ^0.0.1
   flutter_launcher_icons: ^0.13.1
+  device_info_plus: ^9.0.2
 
 dev_dependencies:
   flutter_test:

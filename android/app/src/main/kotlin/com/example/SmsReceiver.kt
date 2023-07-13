@@ -16,6 +16,8 @@ import DatabaseHelper
 
 class SmsReceiver : BroadcastReceiver() {
     private lateinit var databaseHelper: DatabaseHelper
+    public val CHANNEL = "com.example.sms_encry.database"
+
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
@@ -52,6 +54,7 @@ class SmsReceiver : BroadcastReceiver() {
         val contentValues = ContentValues().apply {
             put("sender", sender)
             put("message_body", messageBody)
+            
         }
         val result = db.insert("sms_table", null, contentValues) != -1L
         db.close()

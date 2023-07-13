@@ -1,6 +1,7 @@
 import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_sms/flutter_sms.dart';
 import 'package:full_expandable_fab/full_expandable_fab.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,6 +13,8 @@ import 'package:sms_encry/screens/smsPage.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:telephony/telephony.dart';
 
 class AllSms extends StatefulWidget {
   const AllSms({Key? key});
@@ -28,42 +31,43 @@ class _AllSmsState extends State<AllSms> {
   final GlobalKey<ExpandableFabState> keyFab = GlobalKey<ExpandableFabState>();
   Future<List<Map<String, dynamic>>>?
       smsListFuture; // Future for fetching SMS messages
-  List<Contact> _contacts = [];
-  bool _isLoading = false;
+  // List<Contact> _contacts = [];
+  // bool _isLoading = false;
   TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _smsList = [];
+  String myPhoneNumber = '';
 
   @override
-  void initState() {
-    super.initState();
-    fetchContacts();
-    smsListFuture = fetchSavedSMS();
-    _searchController.addListener(() {
-      if (_searchController.text.isEmpty) {
-        // If search text is empty, display all contacts
-        setState(() {
-          _smsList = [];
-        });
-      }
-    });
-  }
+  // void initState() {
+  //   super.initState();
+  //   fetchContacts();
+  //   smsListFuture = fetchSavedSMS();
+  //   _searchController.addListener(() {
+  //     if (_searchController.text.isEmpty) {
+  //       // If search text is empty, display all contacts
+  //       setState(() {
+  //         _smsList = [];
+  //       });
+  //     }
+  //   });
+  // }
 
-  void fetchContacts() async {
-    setState(() {
-      _isLoading = true;
-    });
+  // void fetchContacts() async {
+  //   setState(() {
+  //     _isLoading = true;
+  //   });
 
-    if (await Permission.contacts.request().isGranted) {
-      Iterable<Contact> contacts = await ContactsService.getContacts();
+  //   if (await Permission.contacts.request().isGranted) {
+  //     Iterable<Contact> contacts = await ContactsService.getContacts();
 
-      setState(() {
-        _contacts = contacts.toList();
-        _isLoading = false;
-      });
-    } else {
-      // Handle permissions not granted
-    }
-  }
+  //     setState(() {
+  //       _contacts = contacts.toList();
+  //       _isLoading = false;
+  //     });
+  //   } else {
+  //     // Handle permissions not granted
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -72,207 +76,281 @@ class _AllSmsState extends State<AllSms> {
       backgroundColor: Colors.white,
       closeIconColor: Colors.black,
       duration: const Duration(milliseconds: 500),
-      innerChild: _isLoading
-          ? Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Text("Importing all contacts...")
-                  ],
+      innerChild:
+          //  _isLoading
+          //     ? Expanded(
+          //         child: Center(
+          //           child: Column(
+          //             mainAxisAlignment: MainAxisAlignment.center,
+          //             children: [
+          //               CircularProgressIndicator(),
+          //               SizedBox(
+          //                 height: 20,
+          //               ),
+          //               Text("Importing all contacts...")
+          //             ],
+          //           ),
+          //         ),
+          //       )
+          // :
+          Expanded(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              children: [
+                Text(
+                  "Recipient:",
                 ),
-              ),
-            )
-          : Expanded(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 20,
+                SizedBox(
+                  width: 5,
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.55,
+                  height: 25,
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      number = value;
+                    },
                   ),
-                  Row(
-                    children: [
-                      Text(
-                        "Recipient:",
-                      ),
-                      SizedBox(
-                        width: 5,
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.55,
-                        height: 25,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          onChanged: (value) {
-                            number = value;
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: 1,
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          pushNewScreenWithRouteSettings(
-                            context,
-                            screen: smsPage(num: number.toString()),
-                            settings: RouteSettings(),
-                            withNavBar: false,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.cupertino,
-                          );
-                        },
-                        icon: Icon(
-                          Icons.add,
-                        ),
-                        iconSize: 30,
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    "Or,",
-                    style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 15,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).push(PageRouteBuilder(
-                            transitionDuration: Duration.zero,
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    ContactScreen()));
-                      },
-                      child: Text("Select from my contacts")),
-                  // SizedBox(
-                  //   width: MediaQuery.of(context).size.width * 0.9,
-                  //   height: MediaQuery.of(context).size.height * 0.06,
-                  //   child: TextField(
-                  //     autofocus: false,
-                  //     controller: _searchController,
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         _smsList = [];
-                  //       });
-                  //     },
-                  //     decoration: InputDecoration(
-                  //       labelText: 'Search',
-                  //       prefixIcon: Icon(Icons.search),
-                  //       border: OutlineInputBorder(
-                  //         borderRadius: BorderRadius.circular(15),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
-                  // Expanded(
-                  //   child: ListView.builder(
-                  //     itemCount: _filteredContacts.length,
-                  //     itemBuilder: (context, index) {
-                  //       Contact contact = _filteredContacts[index];
-                  //       return ListTile(
-                  //         leading: (contact.avatar == null ||
-                  //                 contact.avatar!.isEmpty)
-                  //             ? CircleAvatar(
-                  //                 backgroundImage:
-                  //                     AssetImage("assets/images/contact.png"),
-                  //               )
-                  //             : CircleAvatar(child: Text(contact.initials())),
-                  //         title: Text(
-                  //           contact.displayName ?? '',
-                  //           style: TextStyle(
-                  //               fontSize: 16.0, fontWeight: FontWeight.bold),
-                  //         ),
-                  //         subtitle: Text(
-                  //           contact.phones!.isNotEmpty
-                  //               ? contact.phones!.first.value ?? ''
-                  //               : '',
-                  //           style: TextStyle(fontSize: 14.0),
-                  //         ),
-                  //         trailing: Icon(CupertinoIcons.chat_bubble),
-                  //         onTap: () {
-                  //           pushNewScreenWithRouteSettings(
-                  //             context,
-                  //             screen: smsPage(
-                  //               num: contact.phones!.isNotEmpty
-                  //                   ? contact.phones!.first.value ?? ''
-                  //                   : '',
-                  //             ),
-                  //             settings: RouteSettings(),
-                  //             withNavBar: false,
-                  //             pageTransitionAnimation:
-                  //                 PageTransitionAnimation.cupertino,
-                  //           );
-                  //         },
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: _smsList.length,
-                      itemBuilder: (context, index) {
-                        final sender = _smsList[index]['sender'];
-                        final messageBody = decryptAES(
-                          _smsList[index]['message_body'],
-                          encryptionKey111,
-                        );
+                ),
+                SizedBox(
+                  width: 1,
+                ),
+                IconButton(
+                  onPressed: () {
+                    String encryptAES(String plainText, String key) {
+                      final keyBytes = encrypt.Key.fromUtf8(key);
+                      final iv = encrypt.IV.fromLength(16);
+                      final encrypter =
+                          encrypt.Encrypter(encrypt.AES(keyBytes));
+                      final encrypted = encrypter.encrypt(plainText, iv: iv);
+                      return encrypted.base64;
+                    }
 
-                        return InkWell(
-                          onTap: () {
-                            pushNewScreenWithRouteSettings(
-                              context,
-                              screen: decryptionPage(
-                                title: sender,
-                                body: messageBody,
-                              ),
-                              settings: RouteSettings(),
-                              withNavBar: false,
-                              pageTransitionAnimation:
-                                  PageTransitionAnimation.cupertino,
-                            );
-                          },
-                          child: ListTile(
-                            title: Text(sender),
-                            subtitle: Text(messageBody),
-                            trailing: IconButton(
-                              onPressed: () {
-                                final id = _smsList[index]['id'];
-                                if (id != null) {
-                                  deleteSMS(id).then((_) {
-                                    setState(() {
-                                      smsListFuture =
-                                          fetchSavedSMS(); // Refresh the SMS messages after deletion
-                                    });
-                                  });
-                                }
-                              },
-                              icon: Icon(
-                                CupertinoIcons.delete,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ),
+                    void _sendSMS(String message, String recipient) async {
+                      try {
+                        String _result = await sendSMS(
+                          message: message,
+                          recipients: [recipient],
+                          sendDirect: true,
                         );
-                      },
-                    ),
+                        print(_result);
+                        await saveSentSMS(
+                          number,
+                          message,
+                        );
+                        // EasyLoading.showSuccess("SMS sent with encryption");
+                      } catch (error) {
+                        print('Failed to send SMS: $error');
+                        // EasyLoading.showError('$error');
+                        // Handle the error accordingly
+                      }
+                    }
+
+                    TextEditingController _controller = TextEditingController();
+
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "SMS to $number",
+                              style: TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        content: TextField(
+                          controller: _controller,
+                        ),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              if (number == "") {
+                                EasyLoading.showError('Put the number first');
+                              } else {
+                                final String originalText = _controller.text;
+                                final String encryptionKey = encryptionKey111;
+                                String encryptedText =
+                                    encryptAES(originalText, encryptionKey);
+                                // EasyLoading.showToast(encryptedText);
+                                _controller.clear();
+                                _sendSMS(encryptedText, number);
+
+                                FocusScope.of(context).unfocus();
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: Text('Send'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    Map<String, bool> expansionStateMap = {};
+                    // Handle the action when clicking on the right side
+                    setState(() {
+                      if (expansionStateMap[number] != null) {
+                        expansionStateMap[number] = !expansionStateMap[number]!;
+                      }
+                    });
+                  },
+                  icon: Icon(
+                    Icons.add,
                   ),
-                ],
+                  iconSize: 30,
+                )
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              "Or,",
+              style: TextStyle(
+                color: Colors.deepPurple,
+                fontWeight: FontWeight.w500,
+                fontSize: 15,
               ),
             ),
+            SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(PageRouteBuilder(
+                      transitionDuration: Duration.zero,
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          ContactScreen()));
+                },
+                child: Text("Select from my contacts")),
+            // SizedBox(
+            //   width: MediaQuery.of(context).size.width * 0.9,
+            //   height: MediaQuery.of(context).size.height * 0.06,
+            //   child: TextField(
+            //     autofocus: false,
+            //     controller: _searchController,
+            //     onChanged: (value) {
+            //       setState(() {
+            //         _smsList = [];
+            //       });
+            //     },
+            //     decoration: InputDecoration(
+            //       labelText: 'Search',
+            //       prefixIcon: Icon(Icons.search),
+            //       border: OutlineInputBorder(
+            //         borderRadius: BorderRadius.circular(15),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            // Expanded(
+            //   child: ListView.builder(
+            //     itemCount: _filteredContacts.length,
+            //     itemBuilder: (context, index) {
+            //       Contact contact = _filteredContacts[index];
+            //       return ListTile(
+            //         leading: (contact.avatar == null ||
+            //                 contact.avatar!.isEmpty)
+            //             ? CircleAvatar(
+            //                 backgroundImage:
+            //                     AssetImage("assets/images/contact.png"),
+            //               )
+            //             : CircleAvatar(child: Text(contact.initials())),
+            //         title: Text(
+            //           contact.displayName ?? '',
+            //           style: TextStyle(
+            //               fontSize: 16.0, fontWeight: FontWeight.bold),
+            //         ),
+            //         subtitle: Text(
+            //           contact.phones!.isNotEmpty
+            //               ? contact.phones!.first.value ?? ''
+            //               : '',
+            //           style: TextStyle(fontSize: 14.0),
+            //         ),
+            //         trailing: Icon(CupertinoIcons.chat_bubble),
+            //         onTap: () {
+            //           pushNewScreenWithRouteSettings(
+            //             context,
+            //             screen: smsPage(
+            //               num: contact.phones!.isNotEmpty
+            //                   ? contact.phones!.first.value ?? ''
+            //                   : '',
+            //             ),
+            //             settings: RouteSettings(),
+            //             withNavBar: false,
+            //             pageTransitionAnimation:
+            //                 PageTransitionAnimation.cupertino,
+            //           );
+            //         },
+            //       );
+            //     },
+            //   ),
+            // ),
+            SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _smsList.length,
+                itemBuilder: (context, index) {
+                  final sender = _smsList[index]['sender'];
+                  final messageBody = decryptAES(
+                    _smsList[index]['message_body'],
+                    encryptionKey111,
+                  );
+
+                  return InkWell(
+                    onTap: () {
+                      pushNewScreenWithRouteSettings(
+                        context,
+                        screen: decryptionPage(
+                          title: sender,
+                          body: messageBody,
+                        ),
+                        settings: RouteSettings(),
+                        withNavBar: false,
+                        pageTransitionAnimation:
+                            PageTransitionAnimation.cupertino,
+                      );
+                    },
+                    child: ListTile(
+                      title: Text(sender),
+                      subtitle: Text(messageBody),
+                      trailing: IconButton(
+                        onPressed: () {
+                          final id = _smsList[index]['id'];
+                          if (id != null) {
+                            deleteSMS(id).then((_) {
+                              setState(() {
+                                smsListFuture =
+                                    fetchSavedSMS(); // Refresh the SMS messages after deletion
+                              });
+                            });
+                          }
+                        },
+                        icon: Icon(
+                          CupertinoIcons.delete,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
       icon: Icon(
         Icons.add,
         color: Colors.white,
@@ -347,6 +425,10 @@ class _AllSmsState extends State<AllSms> {
                               sendDirect: true,
                             );
                             print(_result);
+                            await saveSentSMS(
+                              sender,
+                              message,
+                            );
                             // EasyLoading.showSuccess("SMS sent with encryption");
                           } catch (error) {
                             print('Failed to send SMS: $error');
@@ -383,12 +465,13 @@ class _AllSmsState extends State<AllSms> {
                                   final String originalText = _controller.text;
                                   final String encryptionKey = encryptionKey111;
                                   String encryptedText =
-                                      encryptAES(originalText, encryptionKey) +
-                                          "encryption";
+                                      encryptAES(originalText, encryptionKey);
                                   // EasyLoading.showToast(encryptedText);
                                   _controller.clear();
                                   _sendSMS(encryptedText, sender);
+
                                   FocusScope.of(context).unfocus();
+                                  Navigator.pop(context);
                                 },
                                 child: Text('Send'),
                               ),
@@ -419,9 +502,16 @@ class _AllSmsState extends State<AllSms> {
                     expandedCrossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ...messages.map<Widget>((sms) => ListTile(
-                            title: Text(sms['message_body']),
+                            title: Text(decryptAES(
+                                sms['message_body'], encryptionKey111)),
                             trailing: IconButton(
                               onPressed: () {
+                                print('Sender: ${sms['sender']}');
+                                print('Message: ${sms['message_body']}');
+                                print('Is Me: ${sms['isMe']}');
+                                print('id : ${sms['id']}');
+                                print('---');
+
                                 final id = sms['id'];
                                 if (id != null) {
                                   deleteSMS(id).then((_) {
@@ -434,6 +524,7 @@ class _AllSmsState extends State<AllSms> {
                               icon: Icon(
                                 CupertinoIcons.delete,
                                 color: Colors.red,
+                                size: 18,
                               ),
                             ),
                           )),
@@ -500,9 +591,9 @@ class _AllSmsState extends State<AllSms> {
   }
 
   String decryptAES(String cipherText, String key) {
-    if (cipherText.isEmpty || key.isEmpty) {
-      return ''; // Return an empty string if either cipherText or key is empty
-    }
+    // if (cipherText.isEmpty || key.isEmpty) {
+    //   return ''; // Return an empty string if either cipherText or key is empty
+    // }
 
     final keyBytes = encrypt.Key.fromUtf8(key);
     final iv = encrypt.IV.fromLength(16);
@@ -510,6 +601,26 @@ class _AllSmsState extends State<AllSms> {
     final decrypted = encrypter.decrypt64(cipherText, iv: iv);
 
     return decrypted;
+  }
+
+  Future<void> saveSentSMS(String recipient, String message) async {
+    final databasePath = await getDatabasesPath();
+    final database = await openDatabase(
+      path.join(databasePath, 'sms_database.db'),
+      version: 1,
+    );
+
+    try {
+      await database.insert(
+        'sms_table',
+        {
+          'sender': recipient,
+          'message_body': message,
+        },
+      );
+    } finally {
+      await database.close();
+    }
   }
 
   Future<void> deleteSMS(int id) async {
