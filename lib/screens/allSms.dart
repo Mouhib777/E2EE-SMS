@@ -13,7 +13,6 @@ import 'package:sms_encry/screens/smsPage.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:telephony/telephony.dart';
 
 class AllSms extends StatefulWidget {
@@ -31,43 +30,36 @@ class _AllSmsState extends State<AllSms> {
   final GlobalKey<ExpandableFabState> keyFab = GlobalKey<ExpandableFabState>();
   Future<List<Map<String, dynamic>>>?
       smsListFuture; // Future for fetching SMS messages
-  // List<Contact> _contacts = [];
-  // bool _isLoading = false;
   TextEditingController _searchController = TextEditingController();
   List<Map<String, dynamic>> _smsList = [];
   String myPhoneNumber = '';
 
   @override
-  // void initState() {
-  //   super.initState();
-  //   fetchContacts();
-  //   smsListFuture = fetchSavedSMS();
-  //   _searchController.addListener(() {
-  //     if (_searchController.text.isEmpty) {
-  //       // If search text is empty, display all contacts
-  //       setState(() {
-  //         _smsList = [];
-  //       });
-  //     }
-  //   });
-  // }
+  void initState() {
+    super.initState();
+    fetchContacts();
+    smsListFuture = fetchSavedSMS();
+    _searchController.addListener(() {
+      if (_searchController.text.isEmpty) {
+        // If search text is empty, display all contacts
+        setState(() {
+          _smsList = [];
+        });
+      }
+    });
+  }
 
-  // void fetchContacts() async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
+  void fetchContacts() async {
+    if (await Permission.contacts.request().isGranted) {
+      Iterable<Contact> contacts = await ContactsService.getContacts();
 
-  //   if (await Permission.contacts.request().isGranted) {
-  //     Iterable<Contact> contacts = await ContactsService.getContacts();
-
-  //     setState(() {
-  //       _contacts = contacts.toList();
-  //       _isLoading = false;
-  //     });
-  //   } else {
-  //     // Handle permissions not granted
-  //   }
-  // }
+      setState(() {
+        _filteredContacts = contacts.toList();
+      });
+    } else {
+      // Handle permissions not granted
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,24 +68,7 @@ class _AllSmsState extends State<AllSms> {
       backgroundColor: Colors.white,
       closeIconColor: Colors.black,
       duration: const Duration(milliseconds: 500),
-      innerChild:
-          //  _isLoading
-          //     ? Expanded(
-          //         child: Center(
-          //           child: Column(
-          //             mainAxisAlignment: MainAxisAlignment.center,
-          //             children: [
-          //               CircularProgressIndicator(),
-          //               SizedBox(
-          //                 height: 20,
-          //               ),
-          //               Text("Importing all contacts...")
-          //             ],
-          //           ),
-          //         ),
-          //       )
-          // :
-          Expanded(
+      innerChild: Expanded(
         child: Column(
           children: [
             SizedBox(
@@ -225,13 +200,15 @@ class _AllSmsState extends State<AllSms> {
               height: 20,
             ),
             ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(PageRouteBuilder(
-                      transitionDuration: Duration.zero,
-                      pageBuilder: (context, animation, secondaryAnimation) =>
-                          ContactScreen()));
-                },
-                child: Text("Select from my contacts")),
+              onPressed: () {
+                Navigator.of(context).push(PageRouteBuilder(
+                  transitionDuration: Duration.zero,
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      ContactScreen(),
+                ));
+              },
+              child: Text("Select from my contacts"),
+            ),
             SizedBox(
               height: 20,
             ),
@@ -324,150 +301,156 @@ class _AllSmsState extends State<AllSms> {
               // Display the SMS messages
               final smsList = snapshot.data;
 
-              // Group SMS messages by sender
-              final groupedSmsList = _groupSmsBySender(smsList!);
+              if (smsList != null) {
+                final groupedSmsList = _groupSmsBySender(smsList);
 
-              return ListView.builder(
-                itemCount: groupedSmsList.length,
-                itemBuilder: (context, index) {
-                  final sender = groupedSmsList[index]['sender'];
-                  final messages = groupedSmsList[index]['messages'];
+                return ListView.builder(
+                  itemCount: groupedSmsList.length,
+                  itemBuilder: (context, index) {
+                    final sender = groupedSmsList[index]['sender'];
+                    final messages = groupedSmsList[index]['messages'];
 
-                  return ExpansionTile(
-                    subtitle: Text(
-                      "${messages.length} SMS",
-                      style: TextStyle(
-                        color: Colors.grey,
+                    return ExpansionTile(
+                      subtitle: Text(
+                        "${messages.length} SMS",
+                        style: TextStyle(
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                    title: Text(sender),
-                    trailing: GestureDetector(
-                      onTap: () {
-                        String encryptAES(String plainText, String key) {
-                          final keyBytes = encrypt.Key.fromUtf8(key);
-                          final iv = encrypt.IV.fromLength(16);
-                          final encrypter =
-                              encrypt.Encrypter(encrypt.AES(keyBytes));
-                          final encrypted =
-                              encrypter.encrypt(plainText, iv: iv);
-                          return encrypted.base64;
-                        }
-
-                        void _sendSMS(String message, String recipient) async {
-                          try {
-                            String _result = await sendSMS(
-                              message: message,
-                              recipients: [recipient],
-                              sendDirect: true,
-                            );
-                            print(_result);
-                            await saveSentSMS(
-                              sender,
-                              message,
-                            );
-                            // EasyLoading.showSuccess("SMS sent with encryption");
-                          } catch (error) {
-                            print('Failed to send SMS: $error');
-                            // EasyLoading.showError('$error');
-                            // Handle the error accordingly
+                      title: Text(sender),
+                      trailing: GestureDetector(
+                        onTap: () {
+                          String encryptAES(String plainText, String key) {
+                            final keyBytes = encrypt.Key.fromUtf8(key);
+                            final iv = encrypt.IV.fromLength(16);
+                            final encrypter =
+                                encrypt.Encrypter(encrypt.AES(keyBytes));
+                            final encrypted =
+                                encrypter.encrypt(plainText, iv: iv);
+                            return encrypted.base64;
                           }
-                        }
 
-                        TextEditingController _controller =
-                            TextEditingController();
+                          void _sendSMS(
+                              String message, String recipient) async {
+                            try {
+                              String _result = await sendSMS(
+                                message: message,
+                                recipients: [recipient],
+                                sendDirect: true,
+                              );
+                              print(_result);
+                              await saveSentSMS(
+                                sender,
+                                message,
+                              );
+                              // EasyLoading.showSuccess("SMS sent with encryption");
+                            } catch (error) {
+                              print('Failed to send SMS: $error');
+                              // EasyLoading.showError('$error');
+                              // Handle the error accordingly
+                            }
+                          }
 
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  "SMS to $sender",
-                                  style: TextStyle(fontSize: 16),
+                          TextEditingController _controller =
+                              TextEditingController();
+
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "SMS to $sender",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              content: TextField(
+                                controller: _controller,
+                              ),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    final String originalText =
+                                        _controller.text;
+                                    final String encryptionKey =
+                                        encryptionKey111;
+                                    String encryptedText =
+                                        encryptAES(originalText, encryptionKey);
+                                    // EasyLoading.showToast(encryptedText);
+                                    _controller.clear();
+                                    _sendSMS(encryptedText, sender);
+
+                                    FocusScope.of(context).unfocus();
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text('Send'),
                                 ),
                               ],
                             ),
-                            content: TextField(
-                              controller: _controller,
-                            ),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  final String originalText = _controller.text;
-                                  final String encryptionKey = encryptionKey111;
-                                  String encryptedText =
-                                      encryptAES(originalText, encryptionKey);
-                                  // EasyLoading.showToast(encryptedText);
-                                  _controller.clear();
-                                  _sendSMS(encryptedText, sender);
-
-                                  FocusScope.of(context).unfocus();
-                                  Navigator.pop(context);
-                                },
-                                child: Text('Send'),
-                              ),
-                            ],
-                          ),
-                        );
-                        // Navigator.of(context).push(PageRouteBuilder(
-                        //     transitionDuration: Duration.zero,
-                        //     pageBuilder:
-                        //         (context, animation, secondaryAnimation) =>
-                        //             smsPage(
-                        //               num: sender,
-                        //             )));
-                        Map<String, bool> expansionStateMap = {};
-                        // Handle the action when clicking on the right side
-                        setState(() {
-                          if (expansionStateMap[sender] != null) {
-                            expansionStateMap[sender] =
-                                !expansionStateMap[sender]!;
-                          }
-                        });
-                      },
-                      child: Icon(
-                        CupertinoIcons.chat_bubble,
-                        color: Colors.black,
+                          );
+                          // Navigator.of(context).push(PageRouteBuilder(
+                          //     transitionDuration: Duration.zero,
+                          //     pageBuilder:
+                          //         (context, animation, secondaryAnimation) =>
+                          //             smsPage(
+                          //               num: sender,
+                          //             )));
+                          Map<String, bool> expansionStateMap = {};
+                          // Handle the action when clicking on the right side
+                          setState(() {
+                            if (expansionStateMap[sender] != null) {
+                              expansionStateMap[sender] =
+                                  !expansionStateMap[sender]!;
+                            }
+                          });
+                        },
+                        child: Icon(
+                          CupertinoIcons.chat_bubble,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ...messages.map<Widget>((sms) => ListTile(
-                            title: Text(decryptAES(
-                                sms['message_body'], encryptionKey111)),
-                            trailing: IconButton(
-                              onPressed: () {
-                                print('Sender: ${sms['sender']}');
-                                print('Message: ${sms['message_body']}');
-                                print('Is Me: ${sms['isMe']}');
-                                print('id : ${sms['id']}');
-                                print('---');
+                      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...messages.map<Widget>((sms) => ListTile(
+                              title: Text(decryptAES(
+                                  sms['message_body'], encryptionKey111)),
+                              trailing: IconButton(
+                                onPressed: () {
+                                  print('Sender: ${sms['sender']}');
+                                  print('Message: ${sms['message_body']}');
+                                  // print('Is Me: ${sms['isMe']}');
+                                  print('id : ${sms['id']}');
+                                  print('---');
 
-                                final id = sms['id'];
-                                if (id != null) {
-                                  deleteSMS(id).then((_) {
-                                    setState(() {
-                                      smsListFuture = fetchSavedSMS();
+                                  final id = sms['id'];
+                                  if (id != null) {
+                                    deleteSMS(id).then((_) {
+                                      setState(() {
+                                        smsListFuture = fetchSavedSMS();
+                                      });
                                     });
-                                  });
-                                }
-                              },
-                              icon: Icon(
-                                CupertinoIcons.delete,
-                                color: Colors.red,
-                                size: 18,
+                                  }
+                                },
+                                icon: Icon(
+                                  CupertinoIcons.delete,
+                                  color: Colors.red,
+                                  size: 18,
+                                ),
                               ),
-                            ),
-                          )),
-                    ],
-                  );
-                },
-              );
+                            )),
+                      ],
+                    );
+                  },
+                );
+              } else {
+                return Center(child: Text('No SMS messages found.'));
+              }
             }
           },
         ),
