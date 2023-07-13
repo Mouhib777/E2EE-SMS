@@ -197,7 +197,6 @@ class _AllSmsState extends State<AllSms> {
                     );
 
                     Map<String, bool> expansionStateMap = {};
-                    // Handle the action when clicking on the right side
                     setState(() {
                       if (expansionStateMap[number] != null) {
                         expansionStateMap[number] = !expansionStateMap[number]!;
@@ -233,69 +232,6 @@ class _AllSmsState extends State<AllSms> {
                           ContactScreen()));
                 },
                 child: Text("Select from my contacts")),
-            // SizedBox(
-            //   width: MediaQuery.of(context).size.width * 0.9,
-            //   height: MediaQuery.of(context).size.height * 0.06,
-            //   child: TextField(
-            //     autofocus: false,
-            //     controller: _searchController,
-            //     onChanged: (value) {
-            //       setState(() {
-            //         _smsList = [];
-            //       });
-            //     },
-            //     decoration: InputDecoration(
-            //       labelText: 'Search',
-            //       prefixIcon: Icon(Icons.search),
-            //       border: OutlineInputBorder(
-            //         borderRadius: BorderRadius.circular(15),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-            // Expanded(
-            //   child: ListView.builder(
-            //     itemCount: _filteredContacts.length,
-            //     itemBuilder: (context, index) {
-            //       Contact contact = _filteredContacts[index];
-            //       return ListTile(
-            //         leading: (contact.avatar == null ||
-            //                 contact.avatar!.isEmpty)
-            //             ? CircleAvatar(
-            //                 backgroundImage:
-            //                     AssetImage("assets/images/contact.png"),
-            //               )
-            //             : CircleAvatar(child: Text(contact.initials())),
-            //         title: Text(
-            //           contact.displayName ?? '',
-            //           style: TextStyle(
-            //               fontSize: 16.0, fontWeight: FontWeight.bold),
-            //         ),
-            //         subtitle: Text(
-            //           contact.phones!.isNotEmpty
-            //               ? contact.phones!.first.value ?? ''
-            //               : '',
-            //           style: TextStyle(fontSize: 14.0),
-            //         ),
-            //         trailing: Icon(CupertinoIcons.chat_bubble),
-            //         onTap: () {
-            //           pushNewScreenWithRouteSettings(
-            //             context,
-            //             screen: smsPage(
-            //               num: contact.phones!.isNotEmpty
-            //                   ? contact.phones!.first.value ?? ''
-            //                   : '',
-            //             ),
-            //             settings: RouteSettings(),
-            //             withNavBar: false,
-            //             pageTransitionAnimation:
-            //                 PageTransitionAnimation.cupertino,
-            //           );
-            //         },
-            //       );
-            //     },
-            //   ),
-            // ),
             SizedBox(
               height: 20,
             ),
